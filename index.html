@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#1d2d4b">
+  <title>Procus — Procurement workspace</title>
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/app.js"></script>
+</head>
+<body>
+<div id="procus-workspace" aria-label="Procus procurement workspace">
+  <aside class="p-sidebar">
+    <div class="p-brand">procus<span aria-hidden="true">.</span></div>
+    <div class="p-organization"><span class="p-orgmark">D</span><span>Demo Manufacturing<span class="p-orgsub">Procurement team</span></span></div>
+    <nav class="p-nav" aria-label="Workspace views">
+      <span class="p-navlabel">Workspace</span>
+      <button type="button" class="p-tab" data-view="products" aria-current="page"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m10 2 7 4v8l-7 4-7-4V6l7-4Zm0 8 7-4M10 10 3 6m7 4v8M6.5 4l7 4"/></svg><span>Products &amp; suppliers</span></button>
+      <button type="button" class="p-tab" data-view="workflow"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7.7 3v14m4.6-14v14"/></svg><span>Workflow</span><span id="p-open-count" class="p-nav-count"></span></button>
+      <button type="button" class="p-tab" data-view="spend"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 3v14h14M7 12V9m4 3V5m4 7V7"/></svg><span>Spend</span></button>
+    </nav>
+    <div class="p-sidebarbottom"><span class="p-demo"><span aria-hidden="true"></span>Demo workspace</span><p>3 manufacturers · sample data</p><div class="p-account"><span class="p-avatar">AK</span><span>Alex Kim<span class="p-orgsub">Procurement manager</span></span></div></div>
+  </aside>
+  <div class="p-shell">
+    <header class="p-top"><div class="p-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><span id="p-location">Products &amp; suppliers</span></div><span class="p-topnote">Fictional data</span></header>
+    <main class="p-main">
+      <div class="p-heading"><div><h1 id="p-title">Products &amp; suppliers</h1><p class="p-muted" id="p-subtitle">Monitor prices and review purchasing opportunities.</p></div><span id="p-viewmeta" class="p-viewmeta"></span></div>
+      <div id="p-view"></div>
+      <noscript>This interactive prototype requires JavaScript.</noscript>
+    </main>
+  </div>
+</div>
+</body>
+</html>

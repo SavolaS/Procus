@@ -1,0 +1,157 @@
+<style>
+#procus-workspace{--p-bg:light-dark(#f6f7f5,#141917);--p-panel:light-dark(#ffffff,#1b221f);--p-text:light-dark(#21352c,#e6eee8);--p-muted:light-dark(#66736b,#a4b3aa);--p-line:light-dark(#e0e6e1,#34433a);--p-green:light-dark(#245f43,#98d9ac);--p-soft:light-dark(#eaf3eb,#263c2e);--p-amber:light-dark(#8a570d,#efc47c);--p-amber-bg:light-dark(#fbf0dc,#3d3220);--p-blue:light-dark(#395f9a,#aac7f1);--p-blue-bg:light-dark(#edf2fb,#26364a);--p-pad:14px;font:13px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--p-text);background:var(--p-bg);border:1px solid var(--p-line);border-radius:12px;overflow:hidden;width:100%;box-sizing:border-box;text-align:left}
+#procus-workspace *{box-sizing:border-box}
+#procus-workspace button,#procus-workspace input,#procus-workspace select,#procus-workspace textarea{font:inherit;color:inherit}
+#procus-workspace button,#procus-workspace select{cursor:pointer}
+#procus-workspace button{background:none;border:0}
+#procus-workspace button:focus-visible,#procus-workspace input:focus-visible,#procus-workspace select:focus-visible,#procus-workspace textarea:focus-visible{outline:2px solid var(--p-green);outline-offset:3px}
+#procus-workspace h1,#procus-workspace h2,#procus-workspace h3,#procus-workspace p{margin:0}
+#procus-workspace .p-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 24px;background:var(--p-panel);border-bottom:1px solid var(--p-line)}
+#procus-workspace .p-brand{font-size:24px;letter-spacing:-1.1px;font-weight:650;display:flex;align-items:center;gap:9px}
+#procus-workspace .p-mark{display:grid;place-items:center;background:var(--p-green);color:var(--p-panel);width:27px;height:27px;font-size:18px;border-radius:7px;letter-spacing:-2px;padding-right:2px}
+#procus-workspace .p-account{display:flex;align-items:center;gap:12px;color:var(--p-muted);font-size:12px}
+#procus-workspace .p-avatar{border-radius:50%;width:30px;height:30px;display:grid;place-items:center;background:var(--p-soft);color:var(--p-green);font-weight:600}
+#procus-workspace .p-nav{padding:0 24px;background:var(--p-panel);border-bottom:1px solid var(--p-line)}
+#procus-workspace .p-tab{display:inline-flex;align-items:center;gap:8px;padding:14px 0 11px;color:var(--p-green);border-bottom:2px solid var(--p-green);font-weight:600}
+#procus-workspace .p-main{padding:24px}
+#procus-workspace .p-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:19px}
+#procus-workspace h1{font-size:25px;line-height:1.2;letter-spacing:-.6px;font-weight:600;margin-bottom:7px}
+#procus-workspace .p-muted{color:var(--p-muted)}
+#procus-workspace .p-demo{font-size:11px;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--p-line);border-radius:5px;padding:5px 8px;color:var(--p-muted)}
+#procus-workspace .p-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:10px}
+#procus-workspace .p-metric{background:var(--p-panel);border:1px solid var(--p-line);border-radius:8px;padding:17px 18px}
+#procus-workspace .p-label{font-size:12px;color:var(--p-muted);display:block;margin-bottom:5px}
+#procus-workspace .p-value{font-size:27px;letter-spacing:-.7px;font-weight:550;font-variant-numeric:tabular-nums;white-space:nowrap}
+#procus-workspace .p-metric p{font-size:11px;color:var(--p-muted);margin-top:5px}
+#procus-workspace .p-assumption{font-size:11px;color:var(--p-muted);margin-bottom:23px}
+#procus-workspace .p-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+#procus-workspace .p-search{border:1px solid var(--p-line);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;background:var(--p-panel);flex:1;max-width:340px;min-width:170px}
+#procus-workspace .p-search input{min-width:0;width:100%;background:transparent;border:0;outline-offset:4px}
+#procus-workspace .p-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#procus-workspace .p-filter select{background:var(--p-panel);border:1px solid var(--p-line);border-radius:6px;padding:8px;max-width:100%}
+#procus-workspace .p-check{display:flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap}
+#procus-workspace input[type=checkbox]{accent-color:var(--p-green)}
+#procus-workspace .p-work{display:grid;grid-template-columns:minmax(0,1fr) 278px;gap:14px;align-items:start}
+#procus-workspace .p-list{background:var(--p-panel);border:1px solid var(--p-line);border-radius:8px;overflow:hidden;min-width:0}
+#procus-workspace .p-listtitle{display:flex;justify-content:space-between;padding:13px 14px;gap:6px;align-items:center;border-bottom:1px solid var(--p-line)}
+#procus-workspace .p-listtitle strong{font-weight:600;font-size:13px}
+#procus-workspace .p-count{color:var(--p-muted);font-size:11px;white-space:nowrap}
+#procus-workspace .p-scroll{overflow-x:auto}
+#procus-workspace table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:540px;font-size:12px}
+#procus-workspace th{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--p-muted);font-weight:500;text-align:left;padding:10px 9px;background:var(--p-bg)}
+#procus-workspace th:first-child{width:29%;padding-left:14px}
+#procus-workspace th:nth-child(2){width:16%}
+#procus-workspace th:nth-child(3){width:22%}
+#procus-workspace th:nth-child(4){width:19%}
+#procus-workspace th:nth-child(5){width:14%}
+#procus-workspace td{padding:var(--p-pad) 9px;border-bottom:1px solid var(--p-line);vertical-align:middle;overflow-wrap:anywhere}
+#procus-workspace td:first-child{padding-left:14px}
+#procus-workspace .p-num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#procus-workspace .p-supplier td{background:var(--p-bg);padding-top:11px;padding-bottom:11px}
+#procus-workspace .p-supplier button{padding:0;display:flex;gap:7px;align-items:center;font-size:12px;font-weight:600;text-align:left}
+#procus-workspace .p-supplier small{display:block;margin-left:21px;color:var(--p-muted);font-size:10px}
+#procus-workspace .p-item{transition:background .12s}
+#procus-workspace .p-item:hover{background:var(--p-bg)}
+#procus-workspace .p-item.p-selected{background:var(--p-soft)}
+#procus-workspace .p-itembutton{text-align:left;padding:0;width:100%;display:block;font-size:12px;font-weight:500}
+#procus-workspace .p-code{display:block;font-size:10px;color:var(--p-muted);margin-top:3px;font-weight:400}
+#procus-workspace .p-flag{color:var(--p-amber);background:var(--p-amber-bg);border-radius:4px;padding:3px 5px;font-size:10px;display:inline-flex;align-items:center;gap:4px}
+#procus-workspace .p-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--p-muted)}
+#procus-workspace .p-status:before{content:'';width:5px;height:5px;flex-shrink:0;border-radius:50%;background:var(--p-muted)}
+#procus-workspace .p-status[data-state='Neuvottelussa']{color:var(--p-blue)}
+#procus-workspace .p-status[data-state='Neuvottelussa']:before{background:var(--p-blue)}
+#procus-workspace .p-status[data-state='Sovittu']{color:var(--p-green)}
+#procus-workspace .p-status[data-state='Sovittu']:before{background:var(--p-green)}
+#procus-workspace .p-positive{color:var(--p-green)}
+#procus-workspace .p-listfoot{padding:10px 14px;color:var(--p-muted);font-size:11px}
+#procus-workspace .p-detail{background:var(--p-panel);border:1px solid var(--p-line);border-radius:8px;padding:18px;min-width:0}
+#procus-workspace .p-eyebrow{font-size:10px;color:var(--p-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+#procus-workspace h2{font-size:18px;font-weight:600;letter-spacing:-.35px;margin-bottom:4px}
+#procus-workspace .p-detail-sub{color:var(--p-muted);font-size:11px;margin-bottom:18px}
+#procus-workspace .p-section{border-top:1px solid var(--p-line);padding-top:15px;margin-top:15px}
+#procus-workspace .p-detail label{display:block;font-size:11px;color:var(--p-muted);margin-bottom:6px}
+#procus-workspace .p-detail select{width:100%;border:1px solid var(--p-line);border-radius:6px;background:var(--p-panel);padding:8px;font-size:12px}
+#procus-workspace .p-detail h3{font-size:12px;font-weight:600;margin-bottom:7px}
+#procus-workspace .p-detail p{font-size:12px}
+#procus-workspace .p-pair{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-top:7px}
+#procus-workspace .p-pair span{color:var(--p-muted)}
+#procus-workspace .p-pair strong{font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+#procus-workspace .p-impact{padding:12px;background:var(--p-soft);border-radius:6px;margin-top:12px}
+#procus-workspace .p-impact strong{font-size:20px;font-weight:550;color:var(--p-green);font-variant-numeric:tabular-nums;display:block}
+#procus-workspace .p-impact span{font-size:11px;color:var(--p-green)}
+#procus-workspace .p-disclosure{margin-top:8px!important;color:var(--p-muted);font-size:10px!important}
+#procus-workspace .p-primary{background:var(--p-green);color:var(--p-panel);border-radius:6px;padding:10px 12px;width:100%;margin-top:15px;font-weight:500;font-size:12px}
+#procus-workspace .p-draft{background:var(--p-bg);padding:12px;margin-top:12px;border-radius:6px;font-size:12px;white-space:pre-wrap}
+#procus-workspace .p-saved{min-height:16px;color:var(--p-green);font-size:10px;margin-top:6px}
+#procus-workspace .p-empty{padding:30px 16px;color:var(--p-muted);text-align:center}
+#procus-workspace svg{width:15px;height:15px;flex-shrink:0}
+#procus-workspace [hidden]{display:none!important}
+@media(max-width:850px){#procus-workspace .p-work{grid-template-columns:minmax(0,1fr)}#procus-workspace .p-detail{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}#procus-workspace .p-detail>header{grid-column:1/-1}#procus-workspace .p-detail .p-section{margin-top:12px}#procus-workspace .p-detail .p-draft{grid-column:1/-1}}
+@media(max-width:540px){#procus-workspace .p-main{padding:16px 12px}#procus-workspace .p-top{padding:14px 16px}#procus-workspace .p-nav{padding:0 16px}#procus-workspace .p-heading{display:block}#procus-workspace .p-demo{display:inline-block;margin-top:10px}#procus-workspace .p-metrics{grid-template-columns:1fr;gap:8px}#procus-workspace .p-metric{padding:12px 14px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 8px}#procus-workspace .p-metric p{grid-column:1/-1}#procus-workspace .p-value{font-size:23px}#procus-workspace .p-label{margin:0}#procus-workspace .p-detail{display:block}#procus-workspace .p-search{max-width:none}#procus-workspace .p-account>span:first-child{display:none}#procus-workspace .p-filter{width:100%;justify-content:space-between}#procus-workspace .p-assumption{margin-bottom:16px}}
+@media(pointer:coarse){#procus-workspace button,#procus-workspace select{min-height:44px}#procus-workspace .p-search input{font-size:16px}#procus-workspace .p-check{min-height:44px}}
+</style>
+<div id="procus-workspace" aria-label="Procus – hankintojen työpöytä">
+  <header class="p-top"><div class="p-brand"><span class="p-mark" aria-hidden="true">p.</span>procus</div><div class="p-account"><span>Esimerkkiyritys Oy</span><span class="p-avatar">AK</span></div></header>
+  <nav class="p-nav" aria-label="Päänavigaatio"><span class="p-tab" aria-current="page"><i data-lucide="layers" aria-hidden="true"></i>Hankinnat</span></nav>
+  <main class="p-main">
+    <div class="p-heading"><div><h1>Hankinnat hallinnassa.</h1><p class="p-muted">Valmistajat, hintapoikkeamat ja seuraavat toimenpiteet.</p></div><span class="p-demo">Luonnos · esimerkkidata</span></div>
+    <div class="p-metrics" id="p-metrics" aria-live="polite">
+      <div class="p-metric"><span class="p-label">Spend nykyhinnoilla · 12 kk</span><div class="p-value" id="p-current">855 700 €</div><p>9 tuotetta · 3 valmistajaa</p></div>
+      <div class="p-metric"><span class="p-label">Tunnistettu säästöpotentiaali</span><div class="p-value" id="p-potential">41 520 €</div><p id="p-potential-note">Sisältää sovitut kohteet</p></div>
+      <div class="p-metric"><span class="p-label">Sovittujen muutosten vaikutus</span><div class="p-value p-positive" id="p-agreed">−5 120 €</div><p id="p-projection">Spend muutosten jälkeen 850 580 €</p></div>
+    </div>
+    <p class="p-assumption">Arviot kiinteällä 12 kk:n esimerkkivolyymilla. Sovittu vaikutus ei ole vielä toteutunut säästö. Yhteenveto kattaa kaikki tuotteet.</p>
+    <div class="p-toolbar">
+      <label class="p-search"><i data-lucide="search" aria-hidden="true"></i><input id="p-search" type="search" placeholder="Hae tuotetta tai valmistajaa" aria-label="Hae tuotetta tai valmistajaa"></label>
+      <div class="p-filter"><label class="p-check"><input id="p-onlyflags" type="checkbox">Vain flagatut</label><select id="p-statusfilter" aria-label="Suodata käsittelyn statuksella"><option value="all">Kaikki statukset</option><option>Uusi</option><option>Selvityksessä</option><option>Neuvottelussa</option><option>Sovittu</option><option>Ei toimenpidettä</option></select></div>
+    </div>
+    <div class="p-work">
+      <section class="p-list" aria-label="Valmistajat ja tuotteet"><div class="p-listtitle"><strong>Valmistajat ja tuotteet</strong><span class="p-count" id="p-resultcount">9 tuotetta</span></div><div class="p-scroll"><table><thead><tr><th scope="col">Tuote / valmistaja</th><th scope="col" class="p-num">Spend / 12 kk</th><th scope="col">Flagi</th><th scope="col">Status</th><th scope="col" class="p-num">Potentiaali</th></tr></thead><tbody id="p-rows"></tbody></table></div><div class="p-listfoot">Avaa tuote nähdäksesi perustelut ja muuttaaksesi statusta.</div></section>
+      <aside class="p-detail" id="p-detail" aria-label="Valitun tuotteen tiedot"></aside>
+    </div>
+  </main>
+</div>
+<script>
+(()=>{
+ const root=document.getElementById('procus-workspace');
+ const $=s=>root.querySelector(s);
+ const products=[
+  {id:'NF-101',name:'Teräslevy 4 mm',supplier:'Nordform',qty:18000,price:12.8,target:11.9,flag:'Hinta +9,4 %',status:'Uusi',why:'Yksikköhinta on noussut 11,70 eurosta 12,80 euroon. Hyväksytyn rinnakkaistoimittajan vertailuhinta on 11,90 €.',next:'Varmista rinnakkaistoimittajan hinnan voimassaolo ja kapasiteetti. Valmistele sen jälkeen hinnantarkistus Nordformin kanssa.',source:'Hinnasto + ostohistoria · esimerkkitiedot'},
+  {id:'NF-204',name:'Kiinnityskulma',supplier:'Nordform',qty:24000,price:4.6,target:4.3,flag:'Hintaero 7,0 %',status:'Selvityksessä',why:'Nykyhinta on 4,60 €. Nykyisen rinnakkaistoimittajan vertailuhinta on 4,30 €. Toimituserien vertailu on kesken.',next:'Varmista toimituserien ja rahdin vertailukelpoisuus ennen neuvottelutavoitteen asettamista.',source:'Kaksi toimittajahinnastoa · esimerkkitiedot'},
+  {id:'NF-310',name:'Lukitusrengas',supplier:'Nordform',qty:30000,price:1.85,target:null,flag:'',status:'Ei toimenpidettä',why:'Käytettävissä olevissa esimerkkitiedoissa ei ole havaittu olennaista hintapoikkeamaa.',next:'Jatka seurantaa hinnaston päivittyessä.',source:'Ostohistoria · esimerkkitiedot'},
+  {id:'BC-112',name:'Sorvattu holkki',supplier:'Baltic Components',qty:16000,price:6.4,target:6.08,flag:'Hintaero 5,3 %',status:'Sovittu',why:'Hinnantarkistuksessa on sovittu uusi yksikköhinta 6,08 € aiemman 6,40 € sijaan. Uuden hinnan toteumaa ei vielä ole.',next:'Varmista uuden hinnan voimaantulo seuraavalla tilauksella.',source:'Neuvottelumuistio · esimerkkitiedot'},
+  {id:'BC-208',name:'Liitoslaippa',supplier:'Baltic Components',qty:6000,price:18.5,target:17.6,flag:'Hinta +8,8 %',status:'Neuvottelussa',why:'Hinta nousi 17,00 eurosta 18,50 euroon. Neuvottelun esimerkkitavoite on 17,60 €; hintaa ei ole vielä sovittu.',next:'Pyydä toimittajalta perustelu korotukselle ja vastaus hinnantarkistukseen.',source:'Hinnasto + neuvottelutavoite · esimerkkitiedot'},
+  {id:'BC-320',name:'Aluslevy M12',supplier:'Baltic Components',qty:100000,price:.42,target:null,flag:'',status:'Ei toimenpidettä',why:'Käytettävissä olevissa esimerkkitiedoissa ei ole havaittu olennaista hintapoikkeamaa.',next:'Jatka seurantaa hinnaston päivittyessä.',source:'Ostohistoria · esimerkkitiedot'},
+  {id:'TM-105',name:'Alumiinikotelo',supplier:'Tekno Metal',qty:4000,price:22,target:20.9,flag:'Indeksipoikkeama',status:'Selvityksessä',why:'Materiaalin vertailuindeksi on laskenut, mutta ostohinta on ennallaan. 20,90 € on alustava selvitysskenaario, ei vahvistettu vertailuhinta.',next:'Selvitä materiaalin kustannusosuus ja indeksin viive ennen hinnanalennuspyyntöä.',source:'Indeksiskenaario · esimerkkitiedot'},
+  {id:'TM-220',name:'Kuusioruuvi M10',supplier:'Tekno Metal',qty:65000,price:.8,target:null,flag:'',status:'Ei toimenpidettä',why:'Käytettävissä olevissa esimerkkitiedoissa ei ole havaittu olennaista hintapoikkeamaa.',next:'Jatka seurantaa hinnaston päivittyessä.',source:'Ostohistoria · esimerkkitiedot'},
+  {id:'TM-304',name:'Kierreholkki',supplier:'Tekno Metal',qty:20000,price:3.2,target:3.04,flag:'Hintaero 5,3 %',status:'Uusi',why:'Nykyinen rinnakkaistoimittaja tarjoaa nimikettä hintaan 3,04 €. Nykyhinta on 3,20 €. Saatavuus on vielä varmistettava.',next:'Varmista vaihtoehdon toimitusaika ja siirrettävissä oleva volyymi.',source:'Rinnakkaistoimittajan tarjous · esimerkkitiedot'}
+ ];
+ const states=['Uusi','Selvityksessä','Neuvottelussa','Sovittu','Ei toimenpidettä'];
+ const suppliers=[...new Set(products.map(p=>p.supplier))];
+ const ui={selected:'NF-101',query:'',onlyFlags:false,statusFilter:'all',collapsed:[],statuses:{},draft:false};
+ const design={density:'Väljä',summary:true};
+ const eur=n=>new Intl.NumberFormat('fi-FI',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+ const unit=n=>new Intl.NumberFormat('fi-FI',{style:'currency',currency:'EUR',minimumFractionDigits:2}).format(n);
+ const integer=n=>new Intl.NumberFormat('fi-FI').format(n);
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const status=p=>ui.statuses[p.id]||p.status;
+ const saving=p=>p.target===null?0:Math.round((p.price-p.target)*p.qty);
+ function restore(saved){const s=saved?.privateContent;if(!s||s.version!==1)return;if(products.some(p=>p.id===s.selected))ui.selected=s.selected;if(typeof s.query==='string')ui.query=s.query.slice(0,100);ui.onlyFlags=!!s.onlyFlags;if(s.statusFilter==='all'||states.includes(s.statusFilter))ui.statusFilter=s.statusFilter;ui.collapsed=Array.isArray(s.collapsed)?s.collapsed.filter(x=>suppliers.includes(x)):[];ui.statuses={};if(s.statuses&&typeof s.statuses==='object')for(const p of products)if(states.includes(s.statuses[p.id]))ui.statuses[p.id]=s.statuses[p.id];}
+ function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{view:'Procus Hankinnat',selectedProduct:ui.selected,status:status(products.find(p=>p.id===ui.selected)),onlyFlagged:ui.onlyFlags},privateContent:{version:1,...ui}}).catch(()=>{});}
+ function visibleProducts(){const q=ui.query.toLocaleLowerCase('fi');return products.filter(p=>(!q||`${p.name} ${p.id} ${p.supplier}`.toLocaleLowerCase('fi').includes(q))&&(!ui.onlyFlags||p.flag)&&(ui.statusFilter==='all'||status(p)===ui.statusFilter));}
+ function renderMetrics(){const current=products.reduce((a,p)=>a+p.qty*p.price,0);const potential=products.filter(p=>status(p)!=='Ei toimenpidettä').reduce((a,p)=>a+saving(p),0);const agreed=products.filter(p=>status(p)==='Sovittu').reduce((a,p)=>a+saving(p),0);$('#p-current').textContent=eur(current);$('#p-potential').textContent=eur(potential);$('#p-agreed').textContent='−'+eur(agreed);$('#p-projection').textContent='Spend muutosten jälkeen '+eur(current-agreed);$('#p-potential-note').textContent=`Sisältää sovitut ${eur(agreed)} · ei lisättävää säästöä`;}
+ function renderRows(){const visible=visibleProducts();$('#p-resultcount').textContent=`${visible.length} / ${products.length} tuotetta`;let html='';for(const supplier of suppliers){const rows=visible.filter(p=>p.supplier===supplier);if(!rows.length)continue;const collapsed=ui.collapsed.includes(supplier);const total=rows.reduce((a,p)=>a+p.qty*p.price,0);const potential=rows.filter(p=>status(p)!=='Ei toimenpidettä').reduce((a,p)=>a+saving(p),0);const flags=rows.filter(p=>p.flag).length;html+=`<tr class="p-supplier"><td colspan="2"><button type="button" data-supplier="${esc(supplier)}" aria-expanded="${!collapsed}"><span aria-hidden="true">${collapsed?'›':'⌄'}</span>${esc(supplier)}</button><small>${rows.length} tuotetta · ${eur(total)}</small></td><td>${flags?`<span class="p-muted">${flags} flagia</span>`:'<span class="p-muted">Ei flageja</span>'}</td><td></td><td class="p-num">${potential?eur(potential):'—'}</td></tr>`;if(!collapsed)for(const p of rows)html+=`<tr class="p-item ${ui.selected===p.id?'p-selected':''}"><td><button type="button" class="p-itembutton" data-product="${p.id}" aria-pressed="${ui.selected===p.id}">${esc(p.name)}<span class="p-code">${p.id}</span></button></td><td class="p-num">${eur(p.price*p.qty)}</td><td>${p.flag?`<span class="p-flag">${esc(p.flag)}</span>`:'<span class="p-muted">—</span>'}</td><td><span class="p-status" data-state="${status(p)}">${status(p)}</span></td><td class="p-num ${saving(p)&&status(p)!=='Ei toimenpidettä'?'p-positive':''}">${saving(p)&&status(p)!=='Ei toimenpidettä'?eur(saving(p)):'—'}</td></tr>`;}$('#p-rows').innerHTML=html||'<tr><td colspan="5" class="p-empty">Ei hakua vastaavia tuotteita.</td></tr>';}
+ function renderDetail(){const p=products.find(p=>p.id===ui.selected);const s=status(p);const amount=saving(p);$('#p-detail').innerHTML=`<header><div class="p-eyebrow">Tuotteen käsittely</div><h2>${esc(p.name)}</h2><div class="p-detail-sub">${esc(p.supplier)} · ${p.id}</div><label for="p-detailstatus">Käsittelyn status</label><select id="p-detailstatus">${states.map(x=>`<option${x===s?' selected':''}>${x}</option>`).join('')}</select><div class="p-saved" id="p-saved" role="status"></div></header><section class="p-section"><h3>${p.flag?'Miksi flagattu?':'Seurannan havainto'}</h3><p>${esc(p.why)}</p><p class="p-disclosure">${esc(p.source)}</p></section><section class="p-section"><h3>Vaikutus spendiin · 12 kk</h3><div class="p-pair"><span>Esimerkkivolyymi</span><strong>${integer(p.qty)} kpl</strong></div><div class="p-pair"><span>Nykyhinta / kpl</span><strong>${unit(p.price)}</strong></div>${p.target!==null?`<div class="p-pair"><span>${s==='Sovittu'?'Sovittu hinta':'Vertailu / skenaario'}</span><strong>${unit(p.target)}</strong></div><div class="p-impact"><strong>−${eur(amount)}</strong><span>${s==='Sovittu'?'Sovittu vuosivaikutus':'Mahdollinen vuosivaikutus'}</span></div><p class="p-disclosure">${s==='Ei toimenpidettä'?'Ei mukana yhteenlasketussa potentiaalissa. ':''}Olettaen koko esimerkkivolyymin uuden hinnan. Lisäkustannuksia ei ole laskettu.</p>`:'<p class="p-disclosure">Ei tunnistettua säästöpotentiaalia.</p>'}</section><section class="p-section"><h3>Seuraava askel</h3><p>${esc(p.next)}</p>${p.flag?'<button class="p-primary" id="p-draftbutton" type="button" aria-expanded="'+ui.draft+'">'+(ui.draft?'Sulje neuvottelurunko':'Näytä neuvottelurunko')+'</button>':''}</section>${ui.draft&&p.flag?`<div class="p-draft"><strong>Sisäinen valmisteluluonnos</strong>\n\n${esc(p.supplier)} / ${esc(p.name)}\n\nHavainto: ${esc(p.why)}\n\nEnnen yhteydenottoa: ${esc(p.next)}\n\nKeskustelun runko:\n1. Käydään läpi nykyhinnan perusteet.\n2. Verrataan hintaa yllä oleviin tietoihin.\n3. Sovitaan jatkosta ja aikataulusta.</div>`:''}`;}
+ function render(){renderMetrics();renderRows();renderDetail();}
+ root.addEventListener('click',e=>{const prod=e.target.closest('[data-product]');if(prod){ui.selected=prod.dataset.product;ui.draft=false;renderRows();renderDetail();save();return;}const supplier=e.target.closest('[data-supplier]');if(supplier){const v=supplier.dataset.supplier;ui.collapsed=ui.collapsed.includes(v)?ui.collapsed.filter(x=>x!==v):[...ui.collapsed,v];renderRows();root.querySelector(`[data-supplier="${v}"]`)?.focus();save();return;}if(e.target.closest('#p-draftbutton')){ui.draft=!ui.draft;renderDetail();$('#p-draftbutton')?.focus();save();}});
+ $('#p-search').addEventListener('input',e=>{ui.query=e.target.value;renderRows();save();});
+ $('#p-onlyflags').addEventListener('change',e=>{ui.onlyFlags=e.target.checked;renderRows();save();});
+ $('#p-statusfilter').addEventListener('change',e=>{ui.statusFilter=e.target.value;renderRows();save();});
+ root.addEventListener('change',e=>{if(e.target.id!=='p-detailstatus')return;ui.statuses[ui.selected]=e.target.value;render();$('#p-detailstatus').focus();$('#p-saved').textContent='Status päivitetty luonnokseen.';save();});
+ function syncControls(){$('#p-search').value=ui.query;$('#p-onlyflags').checked=ui.onlyFlags;$('#p-statusfilter').value=ui.statusFilter;}
+ restore(window.openai?.widgetState);syncControls();render();
+ window.addEventListener('openai:set_globals',e=>{if(!e.detail?.globals?.widgetState)return;restore(e.detail.globals.widgetState);syncControls();render();});
+ function applyDesign(){root.style.setProperty('--p-pad',design.density==='Tiivis'?'9px':'14px');$('#p-metrics').hidden=!design.summary;}
+ applyDesign();if(globalThis.Tweak){const tweak=new Tweak({container:root,onChange:applyDesign});tweak.addSelect(design,'density',{label:'Rivitiheys',options:['Väljä','Tiivis']});tweak.addToggle(design,'summary',{label:'Spend-yhteenveto'});}
+})();
+</script>

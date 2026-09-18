@@ -1,0 +1,13 @@
+{
+  "name": "procus-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Procus procurement workspace prototype",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}
