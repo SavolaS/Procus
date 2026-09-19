@@ -3,14 +3,18 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const root = new URL('./', import.meta.url);
-const files = new Map([
-  ['/', ['index.html', 'text/html; charset=utf-8']],
-  ['/index.html', ['index.html', 'text/html; charset=utf-8']],
-  ['/src/styles.css', ['src/styles.css', 'text/css; charset=utf-8']],
-  ['/src/app.js', ['src/app.js', 'text/javascript; charset=utf-8']],
-  ['/src/data.js', ['src/data.js', 'text/javascript; charset=utf-8']],
-  ['/src/model.js', ['src/model.js', 'text/javascript; charset=utf-8']],
+const types = new Map([
+  ['.html', 'text/html; charset=utf-8'],
+  ['.css', 'text/css; charset=utf-8'],
+  ['.js', 'text/javascript; charset=utf-8'],
 ]);
+
+// Only index.html and plain source files under /src are served, by extension.
+function resolve(pathname) {
+  if (pathname === '/' || pathname === '/index.html') return ['index.html', types.get('.html')];
+  if (!/^\/src\/[a-z0-9-]+\.(css|js)$/.test(pathname)) return null;
+  return [pathname.slice(1), types.get(pathname.slice(pathname.lastIndexOf('.')))];
+}
 
 const port = Number(process.env.PROCUS_PORT || 5173);
 const server = createServer(async (request, response) => {
@@ -20,7 +24,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   const pathname = new URL(request.url, 'http://localhost').pathname;
-  const entry = files.get(pathname);
+  const entry = resolve(pathname);
   if (!entry) {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     response.end('Not found');
