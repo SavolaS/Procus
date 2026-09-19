@@ -1,4 +1,4 @@
-import { products, states, suppliers, conversations } from './data.js';
+import { products, states, suppliers, conversations, period } from './data.js';
 import {
   getStatus, alertCounts, isOpen, computeSpend,
   restoreState, persistState, loadState, openStates,
@@ -23,7 +23,7 @@ function pageHeader() {
   const totals = computeSpend(products, ui.statuses);
   const counts = alertCounts(products, ui.statuses);
   const meta = {
-    overview: [`${suppliers.length} suppliers`, `${products.length} parts`, `${eur(totals.current)} annual spend`],
+    overview: [`${period.start} – ${period.end}`, `${suppliers.length} suppliers · ${products.length} parts`],
     products: [`${products.length} parts`, `${suppliers.length} suppliers`, `${counts.total} open alerts`],
     workflow: [`${openCases().length} open cases`, `${eur(totals.remaining)} still open`],
     agents: ['6 agents', `${blockedQueue().length} waiting on you`],
@@ -32,9 +32,10 @@ function pageHeader() {
   const actions = ui.view === 'products' && ui.detailOpen
     ? '<button type="button" class="p-button" id="p-close-detail">Close detail</button>' : '';
   return `<div class="p-pagehead__main">
-      <p class="p-pagehead__crumb">Procurement workspace</p>
+      <span class="p-pagehead__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V4h16v16H4Z M8 16v-4 M12 16V8 M16 16v-6"/></svg></span>
+      <div><p class="p-pagehead__crumb">Procurement</p>
       <h1>${title}</h1>
-      <p class="p-pagehead__sub">${subtitle}</p>
+      <p class="p-pagehead__sub">${subtitle}</p></div>
     </div>
     <div class="p-pagehead__side">
       <ul class="p-pagehead__meta">${meta.map(item => `<li>${item}</li>`).join('')}</ul>${actions}
@@ -96,7 +97,11 @@ root.addEventListener('click', event => {
   const goto = event.target.closest('[data-goto]');
   if (goto) {
     const { goto: view, product, alert: level, thread } = goto.dataset;
-    if (level) ui.alertFilter = level;
+    if (view === 'products') {
+      ui.query = '';
+      ui.alertFilter = level || 'all';
+      ui.statusFilter = goto.dataset.status || 'all';
+    }
     if (thread) ui.thread = thread;
     if (product) {
       openProduct(product, view);

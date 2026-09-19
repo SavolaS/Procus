@@ -76,68 +76,57 @@ function overview(ui) {
   const priority = [...open].sort(byPriority).slice(0, 6);
   const criticalValue = open.filter(product => alertLevel(product) === 'critical').reduce((sum, product) => sum + saving(product), 0);
   const queue = conversations.filter(entry => entry.needs && !ui.handled.includes(entry.id));
+  const agentState = agent => ui.paused.includes(agent.id) ? 'paused' : agent.state;
 
   return `
-  ${counts.critical ? `<div class="p-banner p-banner--critical" role="status">
-    <span class="p-banner__icon" aria-hidden="true">!</span>
-    <p><strong>${counts.critical} critical price ${counts.critical === 1 ? 'alert' : 'alerts'} worth ${eur(criticalValue)} a year.</strong>
-      Each one has evidence attached and a prepared next step.</p>
-    <button type="button" class="p-button p-button--inverse" data-goto="products" data-alert="critical">Show critical alerts</button></div>` : ''}
-
-  <div class="p-kpis">
-    ${kpi({ label: 'Annual purchasing spend', value: eur(totals.current), note: `${products.length} parts · ${suppliers.length} suppliers · ${period.start}–${period.end}` })}
-    ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${(totals.potential / totals.current * 100).toFixed(1)}% of spend across ${open.length + stages[3].items.length} parts`, tone: 'opportunity' })}
-    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${stages[3].items.length} price changes agreed · ${eur(totals.realised)} realised on invoices so far`, tone: 'success' })}
-    ${kpi({
-      label: 'Open alerts', value: String(counts.total), note: 'Signals waiting for a decision',
-      tone: counts.critical ? 'alert' : '',
-      foot: `<span class="p-kpi__split">${['critical', 'warning', 'watch'].map(level =>
-        `<button type="button" class="p-chip p-chip--${level}" data-goto="products" data-alert="${level}">${counts[level]} ${alertMeta[level].label.toLowerCase()}</button>`).join('')}</span>`,
+  <section class="p-kpis p-kpis--overview" aria-label="Purchasing summary">
+    ${kpi({ label: 'Annual spend', value: eur(totals.current), note: `${period.start} – ${period.end}` })}
+    ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${(totals.potential / totals.current * 100).toFixed(1)}% of spend · ${open.length + stages[3].items.length} parts` })}
+    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${eur(totals.realised)} realised · ${stages[3].items.length} agreements` })}
+    ${kpi({ label: 'Open alerts', value: String(counts.total), note: '',
+      foot: `<div class="p-kpi__split">${['critical', 'warning', 'watch'].map(level =>
+        `<button type="button" class="p-severitylink" data-level="${level}" data-goto="products" data-alert="${level}">${counts[level]} ${alertMeta[level].label.toLowerCase()}</button>`).join('')}</div>`,
     })}
-  </div>
-
-  <section class="p-path" aria-label="Procurement pipeline">
-    ${stages.map((stage, index) => `<div class="p-path__step" data-state="${esc(stage.state)}" data-position="${index}">
-      <button type="button" data-goto="workflow" data-stage="${esc(stage.state)}">
-        <span class="p-path__name">${esc(stage.state)}</span>
-        <span class="p-path__count">${stage.items.length}</span>
-        <span class="p-path__value">${stage.value ? `${eur(stage.value)} at stake` : 'No open value'}</span>
-        ${stage.stalled.length ? `<span class="p-path__warn">${stage.stalled.length} over 21 days</span>` : ''}
-      </button></div>`).join('')}
   </section>
 
-  <div class="p-grid p-grid--2">
-    ${card('Needs your attention', `<ol class="p-alertlist">
-      ${priority.map(product => `<li>
-        <button type="button" data-goto="products" data-product="${product.id}">
-          <span class="p-alertlist__bar" data-level="${alertLevel(product)}" aria-hidden="true"></span>
-          <span class="p-alertlist__main">
-            <strong>${esc(product.name)}</strong>
-            <span class="p-alertlist__sub">${esc(product.supplier)} · ${product.id} · ${esc(signalTypes[product.signal].label)}</span>
-          </span>
-          ${badge(alertLevel(product))}
-          <span class="p-alertlist__value">${eur(saving(product))}<small>a year</small></span>
-        </button></li>`).join('')}
-    </ol>`, {
-    meta: `${open.length} open`,
-    action: `<button type="button" class="p-button p-button--brand" data-goto="products" data-alert="all">Open all alerts</button>`,
-  })}
+  ${card('Case pipeline', `<div class="p-pipeline" aria-label="Cases by status">
+    ${stages.map(stage => `<button type="button" class="p-pipeline__stage" data-goto="products" data-status="${esc(stage.state)}">
+      <span class="p-pipeline__top">${statusPill(stage.state)}<strong>${stage.items.length}</strong></span>
+      <span class="p-pipeline__value">${stage.value ? eur(stage.value) : '—'}<small>${stage.state === 'Agreed' ? ' agreed / year' : stage.value ? ' opportunity / year' : ' No open opportunity'}</small></span>
+      <span class="p-pipeline__note">${openStates.includes(stage.state) && stage.stalled.length ? `${stage.stalled.length} waiting over 21 days` : stage.state === 'Agreed' ? 'Track purchase outcomes' : stage.state === 'No action' ? 'No action planned' : 'No overdue cases'}</span>
+    </button>`).join('')}
+  </div>`, { meta: `${products.length} parts`, action: '<button type="button" class="p-button p-button--quiet" data-goto="workflow">View board →</button>' })}
 
-    ${card('Your agents', `<ul class="p-agentmini">
+  <div class="p-grid p-grid--overview">
+    ${card('Priority alerts', `
+      ${counts.critical ? `<div class="p-prioritynotice"><span class="p-prioritynotice__dot" aria-hidden="true"></span>
+        <span><strong>${counts.critical} critical</strong> · ${eur(criticalValue)} annual opportunity</span>
+        <button type="button" class="p-link" data-goto="products" data-alert="critical">Review critical</button></div>` : ''}
+      <div class="p-prioritytable-wrap"><table class="p-prioritytable" aria-label="Highest priority parts">
+        <thead><tr><th scope="col">Part / supplier</th><th scope="col">Priority</th><th scope="col" class="p-num">Opportunity / year</th></tr></thead>
+        <tbody>${priority.map(product => `<tr>
+          <td><button type="button" class="p-recordlink" data-goto="products" data-product="${product.id}">${esc(product.name)}</button>
+            <span class="p-recordmeta">${esc(product.supplier)} · ${product.id}</span></td>
+          <td>${badge(alertLevel(product))}</td>
+          <td class="p-num">${eur(saving(product))}</td>
+        </tr>`).join('') || '<tr><td colspan="3" class="p-empty">No open alerts. All cases have been reviewed.</td></tr>'}</tbody>
+      </table></div>`, { meta: `${open.length} open`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products" data-alert="all">View all →</button>' })}
+
+    ${card('Agent activity', `<ul class="p-agentmini">
       ${agents.slice(0, 4).map(agent => `<li>
-        <span class="p-state" data-state="${agent.state}">${agent.state}</span>
-        <span class="p-agentmini__main"><strong>${esc(agent.name)}</strong><span>${esc(agent.now)}</span></span>
+        <div class="p-agentmini__heading"><strong>${esc(agent.name)}</strong><span class="p-state" data-state="${agentState(agent)}">${agentState(agent)}</span></div>
+        <p>${ui.paused.includes(agent.id) ? 'Paused by you.' : esc(agent.now)}</p>
       </li>`).join('')}
     </ul>
-    ${queue.length ? `<p class="p-agentmini__queue"><strong>${queue.length}</strong> ${queue.length === 1 ? 'item needs' : 'items need'} your decision before an agent can continue.</p>` : '<p class="p-agentmini__queue">Nothing is waiting on you right now.</p>'}`, {
-    meta: `${agents.filter(agent => agent.state === 'running').length} running`,
-    action: '<button type="button" class="p-button" data-goto="agents">Open agents</button>',
-  })}
+    <div class="p-agentmini__queue">${queue.length ? `<span><strong>${queue.length} decisions</strong> waiting for approval</span><button type="button" class="p-link" data-goto="agents">Review</button>` : '<span>No decisions waiting for approval.</span>'}</div>`, {
+      meta: `${agents.filter(agent => agentState(agent) === 'running').length} running`,
+      action: '<button type="button" class="p-button p-button--quiet" data-goto="agents">View all →</button>',
+    })}
   </div>
 
   ${card('Spend trend', spendChart(series, months, forecastLabels), {
     meta: `Monthly · ${period.start} – ${period.end}`,
-    action: '<button type="button" class="p-button" data-goto="spend">Spend detail</button>',
+    action: '<button type="button" class="p-button p-button--quiet" data-goto="spend">View spend →</button>',
     wide: true,
   })}`;
 }
@@ -443,7 +432,7 @@ function spendView(ui) {
   <p class="p-note"><span class="p-swatch" data-kind="spend"></span>Annual spend <span class="p-swatch" data-kind="opportunity"></span>Identified opportunity</p>`, { wide: true })}
 
   <details class="p-notes"><summary>How these figures are calculated</summary>
-    <p>Every amount uses fictional prices and fixed twelve-month volumes. An opportunity assumes the whole example volume moves to the reference price with no additional freight, tooling or qualification cost. These are planning scenarios, not realised savings.</p>
+    <p>Annual projections use twelve-month purchase volumes. Opportunity assumes that volume moves to the reference price, before additional freight, tooling or qualification costs. Projected and realised savings are reported separately.</p>
     <p>Moving a case to <strong>Agreed</strong> applies its reference price to the projection. Reopening it removes the reduction. Cases marked <strong>No action</strong> are excluded from opportunity totals. Agreed savings are part of the identified opportunity, never added on top of it.</p>
     <p>Three figures are deliberately kept apart. <strong>Identified</strong> is what the evidence suggests is available. <strong>Agreed</strong> is what a supplier has confirmed, expressed as an annual run rate. <strong>Realised</strong> counts only months where purchases have actually been invoiced at the agreed price, so an agreement nobody has ordered against yet contributes nothing.</p>
   </details>`;
@@ -534,7 +523,7 @@ export function detailPanel(ui) {
 }
 
 export const viewMeta = {
-  overview: ['Overview', 'Where your purchasing spend stands today and what needs a decision.'],
+  overview: ['Overview', 'Spend, opportunities and open decisions.'],
   products: ['Parts & suppliers', 'Every part you buy, what its price has done, and where the money is.'],
   workflow: ['Workflow', 'Each opportunity from first signal through to an agreed price.'],
   agents: ['Agents', 'What your agents have done, what they are doing now, and what needs you.'],
