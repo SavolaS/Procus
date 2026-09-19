@@ -68,7 +68,7 @@ function kpi({ label, value, note, tone = '', foot = '' }) {
 
 /* ---------------------------------------------------------------- Overview */
 
-function agentFinding(ui) {
+function agentFinding(ui, compact = false) {
   const candidates = openItems(ui).filter(p => p.signal === 'increase');
   const product = candidates.find(p => p.negotiation) ?? candidates.sort(byPriority)[0];
   if (!product) return '';
@@ -78,8 +78,8 @@ function agentFinding(ui) {
       <h2>${esc(product.name)} is up ${product.change.toFixed(1)}%</h2>
       <p>${esc(product.supplier)} · ${product.id} <span class="p-finding__divider">/</span> ${product.assembly ? esc(product.assembly) : `${eur(saving(product))} potential annual saving`}</p></div>
     <button type="button" class="p-button p-button--brand" data-generate="${product.id}">Generate framework <span aria-hidden="true">→</span></button></div>
-    ${product.negotiation ? evidenceStrip(product) : ''}
-    <div class="p-finding__foot"><span>${product.negotiation ? 'Recommended for negotiation · comparisons need buyer validation' : 'Review the evidence before approaching your supplier'}</span><button type="button" class="p-link" data-goto="products" data-product="${product.id}">View part evidence →</button></div>
+    ${!compact && product.negotiation ? evidenceStrip(product) : ''}
+    ${compact ? '' : `<div class="p-finding__foot"><span>${product.negotiation ? 'Recommended for negotiation · comparisons need buyer validation' : 'Review the evidence before approaching your supplier'}</span><button type="button" class="p-link" data-goto="products" data-product="${product.id}">View part evidence →</button></div>`}
   </section>`;
 }
 
@@ -101,7 +101,7 @@ function overview(ui) {
       ${priority.map(product => `<li><button type="button" data-goto="products" data-product="${product.id}">
         <span class="p-alertlist__main"><strong>${esc(product.name)}</strong><span class="p-alertlist__sub">${product.id} · ${esc(product.supplier)}</span></span>
         <span class="p-alertlist__value">${eur(saving(product))}<small>${percent(product.change)} price change</small></span>
-      </button></li>`).join('')}</ol>`, { meta: `${counts.total} open signals`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products">View parts →</button>' })}
+      </button></li>`).join('') || '<li class="p-empty">No open signals. All parts remain monitored.</li>'}</ol>`, { meta: `${counts.total} open signals`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products">View parts →</button>' })}
     ${card('Negotiation pipeline', `<ol class="p-pipeline">${stages.filter(s => s.state !== 'No action').map(stage => `<li>
       <button type="button" data-goto="products" data-status="${esc(stage.state)}">
         ${statusPill(stage.state)}<span class="p-pipeline__count">${stage.items.length}</span><strong>${eur(stage.value)}</strong>
@@ -221,7 +221,7 @@ function workflowView(ui) {
     ${kpi({ label: 'Waiting over 21 days', value: String(stalled), note: stalled ? 'Cases losing momentum' : 'Nothing is stalled', tone: stalled ? 'alert' : '' })}
   </div>
 
-  ${agentFinding(ui)}
+  ${agentFinding(ui, true)}
   <div class="p-work${ui.detailOpen ? ' has-detail' : ''}">
     <div class="p-board">
       ${stages.map(stage => {
@@ -284,23 +284,6 @@ function agentsView(ui) {
     ${kpi({ label: 'Waiting on you', value: String(queue.length), note: queue.length ? 'Agents are blocked until you decide' : 'Nothing is blocked', tone: queue.length ? 'alert' : 'success' })}
   </div>
 
-  ${queue.length ? card('Waiting for your decision', `<ul class="p-queue">
-    ${queue.map(entry => `<li class="p-queue__item" data-need="${entry.needs}">
-      <div class="p-queue__head">
-        <span class="p-badge p-badge--${entry.needs === 'input' ? 'critical' : 'warning'}">${needsLabel[entry.needs]}</span>
-        <span class="p-queue__where">${esc(entry.supplier)} · ${esc(entry.subject)}</span>
-        <span class="p-queue__time">${esc(entry.updated)}</span>
-      </div>
-      <p class="p-queue__ask">${esc(entry.ask)}</p>
-      <div class="p-queue__actions">
-        <button type="button" class="p-button p-button--brand" data-resolve="${entry.id}" data-choice="approve">${entry.needs === 'approval' ? 'Approve draft (demo)' : entry.needs === 'input' ? 'Confirm and continue' : 'Accept agent recommendation'}</button>
-        <button type="button" class="p-button" data-resolve="${entry.id}" data-choice="handover">Take over myself</button>
-        <button type="button" class="p-button p-button--quiet" data-resolve="${entry.id}" data-choice="dismiss">Not now</button>
-        ${entry.product ? `<button type="button" class="p-button p-button--quiet" data-goto="products" data-product="${entry.product}">Open ${entry.product}</button>` : ''}
-      </div></li>`).join('')}
-  </ul>`, { meta: `${queue.length} blocked`, wide: true }) : `<div class="p-banner p-banner--success" role="status">
-    <span class="p-banner__icon" aria-hidden="true">✓</span><p><strong>Nothing is waiting on you.</strong> Every agent decision has been handled — new ones will appear here.</p></div>`}
-
   <div class="p-grid p-grid--2">
     ${card('Agent roster', `<ul class="p-agents">
       ${agents.map(agent => {
@@ -322,6 +305,24 @@ function agentsView(ui) {
       }).join('')}
     </ul>`, { meta: `${running} running` })}
 
+    <div class="p-agent-work">
+  ${queue.length ? card('Waiting for your decision', `<ul class="p-queue">
+    ${queue.map(entry => `<li class="p-queue__item" data-need="${entry.needs}"><details>
+      <summary class="p-queue__head">
+        <span class="p-badge p-badge--${entry.needs === 'input' ? 'critical' : 'warning'}">${needsLabel[entry.needs]}</span>
+        <span class="p-queue__where">${esc(entry.supplier)} · ${esc(entry.subject)}</span>
+        <span class="p-queue__time">${esc(entry.updated)}</span>
+      </summary>
+      <p class="p-queue__ask">${esc(entry.ask)}</p>
+      <div class="p-queue__actions">
+        <button type="button" class="p-button p-button--brand" data-resolve="${entry.id}" data-choice="approve">${entry.needs === 'approval' ? 'Approve draft (demo)' : entry.needs === 'input' ? 'Confirm and continue' : 'Accept agent recommendation'}</button>
+        <button type="button" class="p-button" data-resolve="${entry.id}" data-choice="handover">Take over myself</button>
+        <button type="button" class="p-button p-button--quiet" data-resolve="${entry.id}" data-choice="dismiss">Not now</button>
+        ${entry.product ? `<button type="button" class="p-button p-button--quiet" data-goto="products" data-product="${entry.product}">Open ${entry.product}</button>` : ''}
+      </div></details></li>`).join('')}
+  </ul>`, { meta: `${queue.length} blocked`, wide: true }) : `<div class="p-banner p-banner--success" role="status">
+    <span class="p-banner__icon" aria-hidden="true">✓</span><p><strong>Nothing is waiting on you.</strong> Every agent decision has been handled — new ones will appear here.</p></div>`}
+
     ${card('Supplier conversations', `<ul class="p-threads">
       ${conversations.map(entry => {
         const resolved = ui.handled.includes(entry.id);
@@ -341,6 +342,7 @@ function agentsView(ui) {
         </ol>` : ''}</li>`;
       }).join('')}
     </ul>`, { meta: `${conversations.length} threads` })}
+    </div>
   </div>
 
   ${card('Activity today', `<ol class="p-timeline">
@@ -379,7 +381,7 @@ function spendView(ui) {
   <div class="p-grid p-grid--wide">
     ${card('Spend by supplier', `<div class="p-tablewrap" tabindex="0" aria-label="Supplier spend table, scroll for more columns"><table class="p-table--spend"><colgroup><col class="p-col-supplier"><col class="p-col-money"><col class="p-col-money"><col class="p-col-money"><col class="p-col-money"><col class="p-col-share"></colgroup>
       <thead><tr><th scope="col">Supplier</th><th scope="col" class="p-num">Baseline</th><th scope="col" class="p-num">Agreed</th>
-        <th scope="col" class="p-num">After changes</th><th scope="col" class="p-num">Still open</th><th scope="col">Share of spend</th></tr></thead>
+        <th scope="col" class="p-num">After changes</th><th scope="col" class="p-num">Still open</th><th scope="col" class="p-num">Share of spend</th></tr></thead>
       <tbody>
       ${rows.map(row => `<tr class="p-row">
         <td><span class="p-row__name">${esc(row.supplier.name)}</span><span class="p-row__sub">${esc(row.supplier.country)} · ${row.items.length} parts · ${esc(row.supplier.contract)}</span></td>

@@ -725,3 +725,29 @@ td { height: 56px; padding: 10px 16px; border-bottom: 1px solid var(--slds-neutr
   .p-targets { gap: 12px; padding: 12px; }
   .p-targets__internal { padding-left: 12px; }
 }
+
+/* Iteration 3: reduce repeated evidence and keep active agents in the first scan. */
+.p-queue__head { cursor: pointer; position: relative; padding-right: 16px; }
+.p-queue__head::after { content: '+'; position: absolute; right: 0; top: 0; color: var(--slds-text-weak); }
+.p-queue details[open] > .p-queue__head::after { content: '−'; }
+.p-queue__head::-webkit-details-marker { display: none; }
+.p-agent-work { min-width: 0; }
+.p-queue__where { font-size: 12px; }
+.p-queue__time { margin-left: 0; }
+.p-agent { padding: 18px 20px; }
+.p-spendchart svg { max-height: 290px; }
+.p-table--parts .p-col-part { width: 25%; }
+.p-table--parts .p-col-trend { width: 16%; }
+.p-table--parts .p-col-money { width: 14%; }
+.p-table--parts .p-col-signal { width: 16%; }
+.p-table--parts .p-col-status { width: 15%; }
+@media (max-width: 1000px) {
+  .p-finding__top { display: grid; grid-template-columns: 40px minmax(0,1fr); align-items: start; }
+  .p-finding__top > .p-button { grid-column: 2; justify-self: start; margin-left: 0; }
+}
+@media (max-width: 760px) {
+  .p-negotiation__footer > div { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+  .p-negotiation__footer .p-button { white-space: normal; }
+  .p-plan-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .p-plan-metrics > div:last-child { grid-column: 1 / -1; }
+}
