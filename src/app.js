@@ -174,8 +174,9 @@ root.addEventListener('click', event => {
   }
 
   if (event.target.closest('#p-brief')) {
+    // Replace only the panel so the rest of the page, and its scroll position, stay put.
     ui.brief = !ui.brief;
-    $('#p-detail').innerHTML = detailPanel(ui).replace(/^<aside[^>]*>|<\/aside>$/g, '');
+    $('#p-detail').outerHTML = detailPanel(ui);
     $('#p-brief')?.focus({ preventScroll: true });
     return;
   }

@@ -129,4 +129,3 @@ export function bar(fraction, overlay = 0, label = '') {
   </svg>`;
 }
 
-export { compact as compactEuro };

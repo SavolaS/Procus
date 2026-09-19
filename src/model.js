@@ -1,6 +1,6 @@
-export const STORAGE_KEY = 'procus.workspace.v3';
-export const views = ['overview', 'products', 'workflow', 'agents', 'spend'];
-export const alertLevels = ['critical', 'warning', 'watch'];
+const STORAGE_KEY = 'procus.workspace.v3';
+const views = ['overview', 'products', 'workflow', 'agents', 'spend'];
+const alertLevels = ['critical', 'warning', 'watch'];
 export const openStates = ['New', 'Under review', 'Negotiating'];
 
 export function getStatus(product, statuses = {}) {
@@ -69,10 +69,6 @@ export function alertCounts(products, statuses = {}) {
   return counts;
 }
 
-export function supplierSummary(products, supplierName, statuses = {}) {
-  const rows = products.filter(product => product.supplier === supplierName);
-  return { rows, ...computeSpend(rows, statuses), alerts: alertCounts(rows, statuses) };
-}
 
 export function pipeline(products, statuses = {}, states = []) {
   return states.map(state => {

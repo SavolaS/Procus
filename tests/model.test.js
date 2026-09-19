@@ -4,7 +4,7 @@ import { products, states, suppliers, conversations, agents } from '../src/data.
 import {
   computeSpend, potentialSaving, alertLevel, alertCounts, isOpen, pipeline,
   categoryTotals, spendSeries, restoreState, persistState, loadState, annualSpend,
-  realisedSaving,
+  realisedSaving, trend,
 } from '../src/model.js';
 
 test('the sample data set is large enough to show a portfolio, not a demo', () => {
@@ -59,6 +59,13 @@ test('missing and higher reference prices never imply a saving', () => {
   assert.equal(potentialSaving({ price: 10, target: null, qty: 100 }), 0);
   assert.equal(potentialSaving({ price: 10, target: 12, qty: 100 }), 0);
   assert.equal(annualSpend({ price: 2.5, qty: 1000 }), 2500);
+});
+
+test('a price that barely moved reads as flat rather than as a direction', () => {
+  assert.equal(trend({ change: 0.3, history: [1], price: 1 }).direction, 'flat');
+  assert.equal(trend({ change: -0.4, history: [1], price: 1 }).direction, 'flat');
+  assert.equal(trend({ change: 0.6, history: [1], price: 1 }).direction, 'up');
+  assert.equal(trend({ change: -1.2, history: [1], price: 1 }).direction, 'down');
 });
 
 test('severity follows what a signal is worth, and parts without a signal never alert', () => {

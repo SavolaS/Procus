@@ -1,16 +1,16 @@
 import { products, suppliers, states, months, period, signalTypes, agents, activity, conversations } from './data.js';
 import {
   getStatus, potentialSaving, annualSpend, alertLevel, isOpen, computeSpend,
-  alertCounts, pipeline, categoryTotals, spendSeries, openStates, realisedSaving,
+  alertCounts, pipeline, categoryTotals, spendSeries, openStates, realisedSaving, trend,
 } from './model.js';
 import { sparkline, priceChart, spendChart, bar } from './chart.js';
 
 export const eur = value => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
-export const unitPrice = value => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: value < 1 ? 3 : 2 }).format(value);
+const unitPrice = value => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: value < 1 ? 3 : 2 }).format(value);
 const integer = value => new Intl.NumberFormat('en-IE').format(value);
 const percent = value => `${value > 0 ? '+' : value < 0 ? '−' : ''}${Math.abs(value).toFixed(1)}%`;
 const initials = name => name.split(' ').map(part => part[0]).join('').slice(0, 2);
-export const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
 const forecastLabels = [...months, 'Oct', 'Nov', 'Dec'];
 const alertMeta = {
@@ -46,7 +46,7 @@ function statusPill(value) {
 }
 
 function trendCell(product) {
-  const direction = Math.abs(product.change) < 0.5 ? 'flat' : product.change > 0 ? 'up' : 'down';
+  const { direction } = trend(product);
   const arrow = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '▬';
   return `<span class="p-trend" data-direction="${direction}" title="Unit price ${unitPrice(product.history[0])} → ${unitPrice(product.price)} over 12 months">
     ${sparkline(product.history, direction)}<span class="p-trend__value"><span aria-hidden="true">${arrow}</span>${percent(product.change)}</span></span>`;
@@ -67,7 +67,7 @@ function kpi({ label, value, note, tone = '', foot = '' }) {
 
 /* ---------------------------------------------------------------- Overview */
 
-export function overview(ui) {
+function overview(ui) {
   const totals = computeSpend(products, ui.statuses);
   const counts = alertCounts(products, ui.statuses);
   const open = openItems(ui);
@@ -193,7 +193,7 @@ export function productRows(ui) {
   return { html: html || `<tr><td colspan="6" class="p-empty">No parts match these filters.<button type="button" class="p-button" data-reset="1">Clear filters</button></td></tr>`, count: visible.length };
 }
 
-export function productsView(ui) {
+function productsView(ui) {
   const counts = alertCounts(products, ui.statuses);
   const next = topOpportunity(ui);
   const chips = [['all', `All parts`, products.length], ...['critical', 'warning', 'watch'].map(level => [level, alertMeta[level].label, counts[level]])];
@@ -235,7 +235,7 @@ export function productsView(ui) {
 
 /* -------------------------------------------------------------- Workflow */
 
-export function workflowView(ui) {
+function workflowView(ui) {
   const stages = pipeline(products, ui.statuses, states);
   const active = stages.filter(stage => stage.state !== 'No action');
   const totalValue = active.reduce((sum, stage) => sum + stage.value, 0);
@@ -307,7 +307,7 @@ const conversationState = {
 };
 const needsLabel = { approval: 'Approval needed', decision: 'Decision needed', input: 'Unclear — needs your input' };
 
-export function agentsView(ui) {
+function agentsView(ui) {
   const queue = conversations.filter(entry => entry.needs && !ui.handled.includes(entry.id));
   const running = agents.filter(agent => !ui.paused.includes(agent.id) && agent.state === 'running').length;
   const found = agents.reduce((sum, agent) => sum + agent.found, 0);
@@ -391,7 +391,7 @@ export function agentsView(ui) {
 
 /* ----------------------------------------------------------------- Spend */
 
-export function spendView(ui) {
+function spendView(ui) {
   const totals = computeSpend(products, ui.statuses);
   const series = spendSeries(products, ui.statuses);
   const categories = categoryTotals(products, ui.statuses);
@@ -472,7 +472,7 @@ export function detailPanel(ui) {
     <section class="p-detail__section">
       <h3>12-month unit price</h3>
       ${priceChart(product, product.target)}
-      <p class="p-detail__change" data-direction="${product.change > 0 ? 'up' : product.change < 0 ? 'down' : 'flat'}">${percent(product.change)} over the period</p>
+      <p class="p-detail__change" data-direction="${trend(product).direction}">${percent(product.change)} over the period</p>
     </section>
 
     <section class="p-detail__section">
@@ -528,7 +528,7 @@ export function detailPanel(ui) {
         <p>Subject: Price review · ${product.id} ${esc(product.name)}</p>
         <p>${esc(product.why)}</p>
         <p>We would like to review the unit price at ${unitPrice(product.target)} for the committed annual volume of ${integer(product.qty)} units. Could you share the cost basis behind the current price before the end of next week?</p>
-        <p class="p-brief__foot">Nothing is sent until you approve it. Procus tracks the reply and updates this case automatically.</p></div>` : ''}
+        <p class="p-brief__foot">Nothing is sent until you approve it. This draft cites the benchmark price only — internal notes and limits stay in Procus and never appear in supplier-facing text.</p></div>` : ''}
     </section>
   </aside>`;
 }
