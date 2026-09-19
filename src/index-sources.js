@@ -44,19 +44,32 @@ export const statfinMaterials = Object.freeze([
   Object.freeze({ code: '2444', key: 'copper', label: 'Copper' }),
 ]);
 
+// Additional discoverable series do not automatically become approved BOM mappings.
+export const statfinCatalogMaterials = Object.freeze([
+  ...statfinMaterials,
+  Object.freeze({ code: '2442', key: 'aluminium', label: 'Aluminium' }),
+  Object.freeze({ code: '2016', key: 'plastics', label: 'Plastics in primary forms' }),
+]);
+
+function validateMaterials(materials) {
+  if (!Array.isArray(materials) || !materials.length || new Set(materials.map(material => material.code)).size !== materials.length
+    || materials.some(material => !statfinCatalogMaterials.some(known => known.code === material.code && known.key === material.key))) throw new Error('Unsupported StatFin materials');
+}
+
 function statfinPeriod(period) {
   if (typeof period !== 'string' || !/^\d{4}M(0[1-9]|1[0-2])$/.test(period)) throw new Error('Invalid StatFin month');
   return period.replace('M', '-');
 }
 
 /** Periods come from current table metadata: unsupported future months are never guessed. */
-export function buildStatfinQuery(periods) {
+export function buildStatfinQuery(periods, materials = statfinMaterials) {
+  validateMaterials(materials);
   if (!Array.isArray(periods) || !periods.length || new Set(periods).size !== periods.length) throw new Error('Unique StatFin months required');
   periods.forEach(statfinPeriod);
   const items = (code, values) => ({ code, selection: { filter: 'item', values } });
   return {
     query: [
-      items(statfinDimensions.product, statfinMaterials.map(material => material.code)),
+      items(statfinDimensions.product, materials.map(material => material.code)),
       items(statfinDimensions.time, [...periods].sort()),
       items(statfinDimensions.market, ['2']),
       items(statfinDimensions.measure, ['thi-pisteluku21']),
@@ -79,7 +92,8 @@ function dimensionCoordinates(json, name, expectedCodes) {
 }
 
 /** Decode the provider's axis order and category offsets, never the submitted query order. */
-export function parseStatfinMaterials(json, retrievedAt) {
+export function parseStatfinMaterials(json, retrievedAt, materials = statfinMaterials) {
+  validateMaterials(materials);
   const dimensions = Object.values(statfinDimensions);
   if (json?.class !== 'dataset' || !Array.isArray(json.id) || !Array.isArray(json.size)
       || json.id.length !== 4 || json.size.length !== 4 || new Set(json.id).size !== 4
@@ -87,7 +101,7 @@ export function parseStatfinMaterials(json, retrievedAt) {
   if (!Number.isFinite(Date.parse(retrievedAt)) || !Number.isFinite(Date.parse(json.updated))) throw new Error('StatFin retrieval and provider timestamps required');
   if (Date.parse(json.updated) > Date.parse(retrievedAt)) throw new Error('StatFin provider timestamp is after retrieval');
   if (!json.value || typeof json.value !== 'object') throw new Error('StatFin observations required');
-  const product = dimensionCoordinates(json, statfinDimensions.product, statfinMaterials.map(material => material.code));
+  const product = dimensionCoordinates(json, statfinDimensions.product, materials.map(material => material.code));
   const time = dimensionCoordinates(json, statfinDimensions.time);
   dimensionCoordinates(json, statfinDimensions.market, ['2']);
   const measure = dimensionCoordinates(json, statfinDimensions.measure, ['thi-pisteluku21']);
@@ -97,7 +111,7 @@ export function parseStatfinMaterials(json, retrievedAt) {
   for (const key of Object.keys(json.value)) {
     if (!/^\d+$/.test(key) || !Number.isSafeInteger(Number(key)) || Number(key) >= observationsCount) throw new Error('Invalid StatFin observation offset');
   }
-  return statfinMaterials.map(material => {
+  return materials.map(material => {
     const observations = time.entries.map(([sourcePeriod, timeOffset]) => {
       const period = statfinPeriod(sourcePeriod);
       const offset = product.index[material.code] * product.stride + timeOffset * time.stride;

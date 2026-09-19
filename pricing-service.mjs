@@ -33,7 +33,7 @@ function evidence(value) {
   return value;
 }
 
-/** Analyze bundled demo snapshots once. This service never contacts publishers or suppliers. */
+/** Analyze validated snapshots; an injected index service owns acquisition and refresh. */
 export function createPricingService({ root = new URL('./', import.meta.url), products,
   analyze = analyzePortfolio, compareReferences = compareReferencePrices,
   readSnapshot = readFile, now = () => new Date().toISOString() } = {}) {
@@ -53,6 +53,10 @@ export function createPricingService({ root = new URL('./', import.meta.url), pr
         } catch { return { id, error: { sourceId: id, reason: 'Saved source unavailable or invalid' } }; }
       }));
       const sourceErrors = loaded.filter(item => item.error).map(item => item.error);
+      for (const item of loaded) {
+        const warnings = [item.snapshot?.sourceError, item.snapshot?.fallbackReason].filter(Boolean);
+        if (warnings.length) sourceErrors.push({ sourceId: item.id, reason: [...new Set(warnings)].join(' ') });
+      }
       const seriesById = Object.fromEntries(loaded.filter(item => item.snapshot).map(item => [item.id, item.snapshot]));
       const analyzedAt = now();
       const results = analyze(products, seriesById, { asOf: analyzedAt });
@@ -71,7 +75,9 @@ export function createPricingService({ root = new URL('./', import.meta.url), pr
         excludedQuoteCount: Object.values(results).reduce((count, result) => count + (result.references?.excluded?.length || 0), 0),
       };
       const evidenceVersion = createHash('sha256').update(JSON.stringify(evidence({ products, seriesById, sourceErrors, results }))).digest('hex');
-      latest = { analyzedAt, evidenceVersion, results, summary, sourceErrors, pipeline, snapshotMode: 'bundled_demo' };
+      const modes = new Set(loaded.filter(item => item.snapshot).map(item => item.snapshot.snapshotMode || 'bundled_demo'));
+      const snapshotMode = modes.size > 1 ? 'mixed_snapshots' : [...modes][0] || 'bundled_demo';
+      latest = { analyzedAt, evidenceVersion, results, summary, sourceErrors, pipeline, snapshotMode };
       lastError = null;
       return latest;
     })().catch(error => { lastError = error; throw error; }).finally(() => { inflight = null; });
@@ -80,6 +86,11 @@ export function createPricingService({ root = new URL('./', import.meta.url), pr
 
   return {
     start,
+    async invalidate() {
+      if (inflight) await inflight.catch(() => {});
+      latest = null;
+      lastError = null;
+    },
     async getLatest() {
       if (!latest) await (inflight || start());
       if (lastError) throw new Error('Automatic pricing scan failed');

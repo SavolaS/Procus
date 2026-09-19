@@ -20,12 +20,12 @@ Preserve the product intent and the meaning of the data: evidence-backed procure
 
 ## Current prototype
 
-Interactive procurement workspace prototype. Five connected portfolio views:
+Procurement workspace with a persistent local backend and an offline demo. Five connected portfolio views:
 
 - **Overview** — where spend stands, what is flagged, and what is waiting on a decision.
 - **Parts & suppliers** — every part grouped by supplier, with a twelve-month price trend and a severity-ranked signal on each row.
 - **Workflow** — each case from first signal to an agreed price, with owners, age and stalled counts per stage.
-- **Agents** — what the agents have done, what they are doing now, their supplier conversations, and the decisions they are blocked on.
+- **Agents** — supplier discovery, reviewed RFQ dispatch, a persistent outbox, and searchable material index sources. The original fictional agent activity remains labelled below the backend workflow.
 - **Spend** — annual spend, its trend, and the opportunity still open.
 
 The portfolio views share the same fictional data: 49 parts across 8 European suppliers, about €25.7M of annual spend. The figures are generated from a fixed seed, so every reload, test run and screenshot shows the same numbers. Automatic BOM/index analysis attaches cost findings to the portfolio and negotiation framework; it does not turn a cost scenario into agreed savings.
@@ -47,6 +47,14 @@ To serve devices on the same local network, run `PROCUS_HOST=0.0.0.0 npm run dev
 ```sh
 npm test
 ```
+
+## Backend demo and live connections
+
+The default remains credential-free and offline. Open **Agents → Find demo suppliers → Prepare RFQ**, review the recipient and request, then **Simulate RFQ email**. Runs, leads, drafts and simulated dispatches persist across reloads and server restarts. No external service is contacted in the default configuration.
+
+Live mode uses the **OpenAI Agents API** with web search for sourced supplier discovery and a narrowly scoped function tool for approved RFQ dispatch through **Resend**. Material indices have a separate credential-free public-data mode with scheduled acquisition, searchable coverage and retained source vintages. Credentials stay on the server; existing mock portfolio data is preserved.
+
+See [backend setup and API](backend/README.md) and [.env.example](.env.example) for enabling each connection, limits, and integration details. No packages need installing.
 
 ## Available interactions
 
@@ -70,7 +78,7 @@ Open [the demo entry](http://127.0.0.1:5173/?demo=1) to start on **Overview**, r
 
 **Restart demo** in the agent brief returns to Overview and clears only this demo's preparation state. Procurement stages and savings remain unchanged. The handoff survives reloads; draft edits last for the current page session. All demo comparisons and buyer targets are illustrative.
 
-The existing part-detail framework still offers optional **Find alternatives** → **Run RFQ agent demo** → **Prepare RFQ draft**. These local preparation flows do not execute remote agents or send messages. The source PNGs in `docs/design-references` remain research material, not shipped application assets.
+The part-detail framework also offers **Find alternatives** → **Open supplier discovery**, which carries the selected part into the backend sourcing workspace. Starting a search and dispatching an RFQ follow the configured demo/live modes and the same review flow. The source PNGs in `docs/design-references` remain research material, not shipped application assets.
 
 ## What the numbers mean
 
@@ -82,7 +90,7 @@ All suppliers, prices, signals and volumes are fictional. Three savings figures 
 
 Cases marked **No action** are excluded from opportunity totals. Summary figures always cover all parts, while supplier subtotals reflect the visible filtered rows. Reference prices are benchmarks used to open a discussion, not internal negotiation limits.
 
-The portfolio has no production backend, authentication, live supplier data or external messaging. Nothing is sent to a supplier. Browser state is local to the current browser and origin. The workspace automatically requests portfolio cost analysis from the local server. Public index snapshots are real; the prototype BOMs, lag assumptions and purchase histories are illustrative.
+The portfolio data, original conversations and savings remain illustrative. Case stages and filters stay in browser storage; the new sourcing workflow and outbox persist in the local backend. Default demo mode never contacts suppliers. Live connections require explicit server configuration, and live workspace requests require an access token. The workspace automatically requests portfolio cost analysis from the local server. Public index snapshots are real; prototype BOMs, lag assumptions and purchase histories are illustrative. This is a single-process local backend, not a multi-tenant hosted deployment.
 
 ## BOM and index pricing
 
@@ -98,7 +106,7 @@ npm run pricing:fetch:statfin
 npm run pricing:analyze
 ```
 
-These are developer ingestion/diagnostic commands. Users receive analysis without running them or entering cost assumptions. Public-data snapshots are included for offline replay; source refresh commands require network access. Updated snapshots are used on the next server start. This is automatic analysis of the latest saved evidence, not a continuously live supplier feed. Bundled snapshots make the demo reproducible and usable without internet access. Restart the server after changing evidence or BOM records; ordinary use needs no manual calculation.
+These remain developer ingestion/diagnostic commands. The backend can now refresh public sources on startup, on a schedule and from Agents when `PROCUS_INDEX_MODE=live`; successful or failed refreshes invalidate the pricing cache without a restart. Defaults use bundled snapshots for reproducible offline replay. The catalog distinguishes broad basic-metals, steel, copper, aluminium and plastics producer-price proxies; unsupported or suppressed observations stay unavailable. Discovering a series does not automatically approve a BOM mapping. Developer edits to BOM records still require a restart.
 
 Comparable-price checks run alongside the cost model. Quotes must match specification, revision, unit, order quantity, delivery basis and approval, with known landed costs and valid dates. Price packs are normalized explicitly. Expired or incomplete offers are excluded with reasons; historical purchases stay separate from current quotes. Current offer fixtures are illustrative, not actual supplier availability. A quote and a BOM estimate remain separate outputs; neither automatically changes an opening target, LAA or savings ledger.
 
@@ -110,7 +118,7 @@ Comparable-price checks run alongside the cost model. Quotes must match specific
 - `DESIGN.md`: entry point to the master design contract, captured reference PNGs and validation notes.
 - `src/evidence.js`: shared price/index/comparable evidence display.
 - `src/negotiation.js`: internal framework and editable supplier draft.
-- `src/rfq.js`: optional local RFQ preparation demo and supplier-facing request.
+- `src/rfq.js`: sourcing handoff and allowlisted supplier-facing RFQ template.
 - `src/styles.css`: the design tokens and every component rule.
 - `src/data.js`: fictional parts, suppliers, agents and supplier conversations.
 - `src/model.js`: spend, severity, pipeline and savings calculations, and validated browser persistence.
@@ -124,7 +132,9 @@ Comparable-price checks run alongside the cost model. Quotes must match specific
 - `src/bom-data.js`: versioned illustrative BOM records and explicit material mappings.
 - `src/index-sources.js`: validated Eurostat and Statistics Finland series decoders.
 - `scripts/fetch-indices.mjs`, `scripts/fetch-statfin.mjs`: public-data snapshot ingestion.
-- `server.mjs`: dependency-free local server; serves the shell, `src` sources and the automatic portfolio analysis endpoint, under a strict Content-Security-Policy.
+- `server.mjs`: dependency-free server, private backend API and strict static-file allowlist.
+- `backend/`: persistent store, Agents API adapter, Resend adapter, workflow, access controls and index acquisition.
+- `src/backend-workspace.js`: sourced supplier leads, reviewed RFQs, persistent outbox and material-index interface.
 - `tests/model.test.js`: data, calculation and persistence checks.
 
 The concept documents remain separate from the implementation.

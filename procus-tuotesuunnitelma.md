@@ -406,3 +406,11 @@ Demon tulee näyttää tekninen päättely vakuuttavasti, mutta reaaliaikaista t
 Demossa aloitetaan Overview-välilehdeltä selkeästä mahdollisesta toimenpiteestä. Polku näyttää ensin neuvottelun perusteet, sitten neuvottelukehyksen (avauspyyntö ja sisäinen LAA), ja vie saman tapauksen Agents-välilehdelle. Tämä on vahvistettu demovaatimus; se ei laajenna tuotetta itsenäiseen toimittajaviestintään tai sopimusten hyväksymiseen.
 
 Toteutusvalinta on yksi ohjattu TM-105-esimerkkitapaus: Overview-nosto → perusteiden tarkistus → kehys → agentin valmistelutehtävä. Avaus on −10 % eli 20,16 €/kpl ja sisäinen vähimmäisalennus −6 % eli 21,06 €/kpl. Agenttinäkymässä voi valmistella muokattavan toimittajaluonnoksen. LAA pysyy sisäisessä aineistossa; esimerkkivertailut erotetaan oikeasta BOM- ja indeksianalyysistä. Demopolun läpikäynti ei muuta sovittuja tai toteutuneita säästöjä. Uudelleenkäynnistys tyhjentää vain demon valmistelutilan.
+
+## 13. Backendin toteutuslaajuuden tarkennus — 19.9.2026
+
+Perustajan uusi toimeksianto lisää oikean backendin, OpenAI Agents API -pohjaisen uusien toimittajien haun, RFQ-sähköpostien lähetysjärjestelmän sekä raaka-aineindeksien hankinnan. Tunnukseton demo ja nykyinen esimerkkidata säilyvät oletuksena. Tämä on toiminnallisen laajuuden lisäys; aiemmat ensimmäisen kokeen rajaukset eivät estä näitä integraatioita.
+
+Toteutuksessa toimittajahaku tuottaa lähteistettyjä, vielä hyväksymättömiä ehdokkaita. Ostajan tarkistama RFQ voidaan lähettää erikseen käyttöön otetulla sähköpostiyhteydellä. Indeksit hankitaan julkisista lähteistä, niiden soveltuvuus ja puuttuvat havainnot säilyvät näkyvissä, eikä sarjan löytyminen itsessään hyväksy BOM-kytkentää. Sisäinen LAA ja muut neuvottelurajat eivät siirry toimittaja-aineistoon. Mahdolliset, sovitut ja toteutuneet säästöt pysyvät erillään.
+
+Tekniset liitännät, oletustilat ja jäljellä olevat rajat on kuvattu [backendin ohjeessa](backend/README.md). Salesforce Lightning -henkinen käyttöliittymän viimeistely on tästä laajuuspäätöksestä erillinen designvalinta; alkuperäinen prototyyppi ei edelleenkään lukitse suunnittelua.

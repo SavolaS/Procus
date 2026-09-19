@@ -32,7 +32,7 @@ export function rfqContent(product, flow = {}) {
       <p>No alternative suppliers or quotes are available for this part in the demo. Prepare the request, then choose and qualify suppliers before contacting them.</p>
     </section>` : '';
 
-  return `<p class="p-plan-source">RFQ agent demo · no suppliers contacted</p>
+  return `<p class="p-plan-source">Supplier discovery preparation · no suppliers contacted yet</p>
     <section class="p-plan-section"><h3>Selected part</h3>
       <dl class="p-pairs">
         <div><dt>Part</dt><dd>${escapeHtml(product.id)} · ${escapeHtml(product.name)}</dd></div>
@@ -51,9 +51,9 @@ export function rfqContent(product, flow = {}) {
     </section>
     ${candidates}
     <section class="p-plan-section">
-      <p class="p-plan-source">You choose which suppliers to approach and review the request before sharing it. This demo does not send messages or approve suppliers.</p>
+      <p class="p-plan-source">Open supplier discovery to review your requirements, find candidates and prepare an RFQ. Searches and drafts are saved by the backend. Demo mode simulates supplier research and email; live mode uses configured connections. Review the full request and contact before approving any email.</p>
       ${complete
         ? '<button type="button" class="p-button p-button--brand" data-rfq-draft="true">Prepare RFQ draft</button>'
-        : '<button type="button" class="p-button p-button--brand" data-run-rfq="true">Run RFQ agent demo</button>'}
+        : '<button type="button" class="p-button p-button--brand" data-run-rfq="true">Open supplier discovery</button>'}
     </section>`;
 }

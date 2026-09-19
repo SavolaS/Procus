@@ -7,10 +7,12 @@ const part = {
   qty: 26000, price: 22, specification: 'Drawing AH-2, revision C',
 };
 
-test('RFQ results require the explicit local completion state', () => {
+test('RFQ preparation opens saved backend discovery; legacy completed content stays explicitly illustrative', () => {
   const initial = rfqContent(part);
   assert.match(initial, /data-run-rfq="true"/);
   assert.match(initial, /no suppliers contacted/);
+  assert.match(initial, /Open supplier discovery/);
+  assert.match(initial, /saved by the backend/);
   assert.doesNotMatch(initial, /Baltic Castings|Nordic Precision|Simulated quote/);
   const complete = rfqContent(part, { rfqComplete: true });
   assert.match(complete, /Baltic Castings AB/);

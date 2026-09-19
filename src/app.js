@@ -8,6 +8,7 @@ import {
 } from './model.js';
 import { renderers, detailPanel, productRows, viewMeta, eur, topOpportunity, priorityRows, productSignal } from './views.js';
 import { automaticEvidenceContent, portfolioCoverage } from './evidence.js';
+import { attachBackendWorkspace } from './backend-workspace.js';
 
 let returnFocus = null;
 const root = document.getElementById('procus-workspace');
@@ -35,7 +36,7 @@ function pageHeader() {
     overview: [`${period.start} – ${period.end}`, 'EUR'],
     products: [`${products.length} parts`, `${suppliers.length} suppliers`, `${counts.total} open alerts`],
     workflow: [`${openCases().length} open cases`, `${eur(totals.remaining)} still open`],
-    agents: [`${agents.length} agents`, `${blockedQueue().length} decisions pending`],
+    agents: ['Supplier sourcing', 'RFQ outbox', 'Material indices'],
     spend: [`${period.start} – ${period.end}`, 'EUR'],
   }[ui.view];
   const actions = '';
@@ -201,8 +202,24 @@ root.addEventListener('click', async event => {
   if (event.target.closest('[data-find-alternatives], [data-run-rfq], [data-rfq-draft]')) {
     const flow = ui.negotiation;
     if (!flow) return;
+    if (event.target.closest('[data-run-rfq]')) {
+      ui.backend.productId = flow.id;
+      ui.backend.specification = '';
+      ui.backend.quantity = '';
+      ui.backend.notice = '';
+      ui.backend.error = '';
+      ui.backend.selectedDraft = null;
+      ui.backend.contactConfirmed = false;
+      ui.negotiation = null;
+      ui.detailOpen = false;
+      ui.view = 'agents';
+      render();
+      $('#p-backend-workspace')?.scrollIntoView({ block: 'start' });
+      $('[data-backend-field="productId"]')?.focus({ preventScroll: true });
+      save();
+      return;
+    }
     flow.step = 'rfq';
-    if (event.target.closest('[data-run-rfq]')) flow.rfqComplete = true;
     if (event.target.closest('[data-rfq-draft]')) {
       const product = products.find(p => p.id === flow.id);
       flow.step = 'rfq-draft';
@@ -433,3 +450,4 @@ async function loadPricingAnalysis() {
 
 render();
 loadPricingAnalysis();
+attachBackendWorkspace({ root, ui, onIndicesUpdated: loadPricingAnalysis });

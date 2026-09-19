@@ -1,4 +1,5 @@
 import { demoOpportunity, demoAgentCase } from './demo-flow.js';
+import { backendWorkspace } from './backend-workspace.js';
 import { evidenceStrip, automaticEvidence, portfolioCoverage, costReason } from './evidence.js';
 import { products, suppliers, states, months, period, signalTypes, agents, activity, conversations } from './data.js';
 import {
@@ -289,8 +290,10 @@ function agentsView(ui) {
 
   return `
   ${demoAgentCase(ui)}
+  ${backendWorkspace(ui.backend)}
+  <div class="p-backend-fixture-note"><strong>Example portfolio agents</strong><span>The activity, conversations and counters below are fictional demo scenarios.</span></div>
   <div class="p-kpis p-kpis--slim">
-    ${kpi({ label: 'Agents running', value: `${running} of ${agents.length}`, note: 'Working continuously on your data' })}
+    ${kpi({ label: 'Demo agents running', value: `${running} of ${agents.length}`, note: 'Illustrative portfolio activity' })}
     ${kpi({ label: 'Lines checked today', value: integer(checked), note: 'Price lists, invoices and orders' })}
     ${kpi({ label: 'Signals raised', value: String(found), note: `${alertCounts(products, ui.statuses).total} still open, the rest agreed or dismissed`, tone: 'opportunity' })}
     ${kpi({ label: 'Waiting on you', value: String(queue.length), note: queue.length ? 'Agents are blocked until you decide' : 'Nothing is blocked', tone: queue.length ? 'alert' : 'success' })}
@@ -509,7 +512,7 @@ export const viewMeta = {
   overview: ['Overview', 'Make every product negotiable.'],
   products: ['Parts & suppliers', 'Price movements, supplier relationships and negotiation status.'],
   workflow: ['Workflow', 'Each opportunity from first signal through to an agreed price.'],
-  agents: ['Agents', 'Portfolio intelligence and preparation. You lead the supplier relationship.'],
+  agents: ['Agents', 'Find suppliers, review RFQs and track sourced material evidence.'],
   spend: ['Spend', 'Annual purchasing spend, trend and the opportunity still open.'],
 };
 
