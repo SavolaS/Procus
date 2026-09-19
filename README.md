@@ -10,15 +10,17 @@ Preserve the product intent and the meaning of the data: evidence-backed procure
 
 ## Product and research notes
 
+- [Pitch outline](procus-pitch.md): founder-provided positioning, customer example, workflow, and illustrative demo.
 - [Agent collaboration notes](AGENTS.md): explicit design freedom for collaborators and coding agents.
 - [Product plan](procus-tuotesuunnitelma.md): product direction, open design decisions, and proposed next workflow.
 - [Competitor research and differentiation](procus-kilpailijatutkimus.md): sourced market review, feature ideas, priorities, and validation plan.
 - [Development proposals](procus-kehitysehdotukset.md): earlier reasoning and the latest research synthesis.
 - [Original concept](procus.md): historical starting point with a current-status note.
+- [Technical ambition and pricing implementation](research/technical-ambition.md): BOM pricing engine, real index connectors, research findings and remaining validation work.
 
 ## Current prototype
 
-Interactive procurement workspace prototype. Five connected views:
+Interactive procurement workspace prototype. Five connected portfolio views:
 
 - **Overview** — where spend stands, what is flagged, and what is waiting on a decision.
 - **Parts & suppliers** — every part grouped by supplier, with a twelve-month price trend and a severity-ranked signal on each row.
@@ -26,7 +28,7 @@ Interactive procurement workspace prototype. Five connected views:
 - **Agents** — what the agents have done, what they are doing now, their supplier conversations, and the decisions they are blocked on.
 - **Spend** — annual spend, its trend, and the opportunity still open.
 
-All views share the same fictional data: 49 parts across 8 European suppliers, about €25.7M of annual spend. The figures are generated from a fixed seed, so every reload, test run and screenshot shows the same numbers.
+The portfolio views share the same fictional data: 49 parts across 8 European suppliers, about €25.7M of annual spend. The figures are generated from a fixed seed, so every reload, test run and screenshot shows the same numbers. Automatic BOM/index analysis attaches cost findings to the portfolio and negotiation framework; it does not turn a cost scenario into agreed savings.
 
 The interface uses an original enterprise design informed by measured Salesforce, Carbon, Fluent and procurement-product references. [DESIGN.md](DESIGN.md) links the master contract, source PNG gallery, UX principles and validation record.
 
@@ -39,6 +41,8 @@ npm run dev
 ```
 
 Open http://127.0.0.1:5173. To use a different port, run `PROCUS_PORT=5174 npm run dev`.
+
+To serve devices on the same local network, run `PROCUS_HOST=0.0.0.0 npm run dev` and open `http://<this-computer-LAN-IP>:5173` on the other device. The default remains loopback-only.
 
 ```sh
 npm test
@@ -55,13 +59,18 @@ npm test
 - Move between views from the alerts, the pipeline and the agent activity feed.
 - Stage changes, the active view, selection, filters, handled decisions and paused agents persist in this browser using localStorage.
 
-## Deck-aligned demo
+## Hackathon demo workflow
 
-Overview → **Generate framework** on TM-105 Aluminium housing. The shared example shows price +12%, aluminium +3%, internal comparable −8% and an indicative alternative −11%. The framework proposes an opening ask of −10% (€20.16) and an internal LAA of −6% (€21.06) against the current €22.40 price.
+Open [the demo entry](http://127.0.0.1:5173/?demo=1) to start on **Overview**, regardless of the previously saved tab.
 
-**Draft supplier message** opens editable subject/body and Copy. The private LAA never enters generated supplier text. **Find alternatives** → **Run RFQ agent demo** → **Prepare RFQ draft** demonstrates optional sourcing. It is local and illustrative: no remote agent runs and no suppliers are contacted. Drafts persist only while the preparation session remains open.
+1. **Review negotiation basis** — the featured TM-105 Aluminium housing case shows a 12% increase (€20.00 → €22.40) and €58,240 potential annual savings at the proposed opening. Review the illustrative internal comparable (−8%) and alternative quote (−11%), their sources and validation gaps. Material context stays separate from verified cost analysis.
+2. **Build negotiation framework** — review the opening ask of **−10% (€20.16/unit)** and the internal **LAA of −6% (€21.06/unit)**, plus the recommended approach and escalation boundary.
+3. **Continue to Agents** — the same case appears at the top of Agents with its internal brief and a concrete preparation task.
+4. **Prepare supplier draft** — review and edit the subject and message. The generated supplier text includes the opening ask and never includes the LAA. Copy is available; no supplier is contacted.
 
-The overview prioritises portfolio monitoring and parts requiring action, with historical spend beneath. Workflow uses a compact finding; Agents puts the roster alongside expandable decisions. The source PNGs in `docs/design-references` are research material, not shipped application assets.
+**Restart demo** in the agent brief returns to Overview and clears only this demo's preparation state. Procurement stages and savings remain unchanged. The handoff survives reloads; draft edits last for the current page session. All demo comparisons and buyer targets are illustrative.
+
+The existing part-detail framework still offers optional **Find alternatives** → **Run RFQ agent demo** → **Prepare RFQ draft**. These local preparation flows do not execute remote agents or send messages. The source PNGs in `docs/design-references` remain research material, not shipped application assets.
 
 ## What the numbers mean
 
@@ -73,7 +82,27 @@ All suppliers, prices, signals and volumes are fictional. Three savings figures 
 
 Cases marked **No action** are excluded from opportunity totals. Summary figures always cover all parts, while supplier subtotals reflect the visible filtered rows. Reference prices are benchmarks used to open a discussion, not internal negotiation limits.
 
-This version has no backend, authentication, live supplier data, integrations or external messaging. Nothing is sent to a supplier. Browser state is local to the current browser and origin.
+The portfolio has no production backend, authentication, live supplier data or external messaging. Nothing is sent to a supplier. Browser state is local to the current browser and origin. The workspace automatically requests portfolio cost analysis from the local server. Public index snapshots are real; the prototype BOMs, lag assumptions and purchase histories are illustrative.
+
+## BOM and index pricing
+
+Cost analysis runs automatically in the local server and appears in the existing overview, part evidence and negotiation framework. No calculator or pricing tab is required. Each result explains why the price merits review, why cost evidence does not support a reduction, or which evidence is missing. The demo evaluates bundled evidence automatically when it starts. No live feeds, polling or external service calls are needed.
+
+The server pairs supported BOM records with the correct saved index series, accounts for yield and material exposure, applies the documented index lag, and compares the scenario range with the current purchase price. Unsupported material mappings do not inherit another material's index. Sources, observation periods, assumptions and missing inputs are retained with each finding.
+
+To see the index comparison, open **Steel plate · NF-101** from Overview's priority list (or search in Parts & suppliers). Its automatic evidence shows monthly **price paid**, **BOM cost estimate** and **material index** on a common baseline of 100, with the lag and source periods labelled. The gap highlights a reason for review; expandable evidence explains material coverage and offers. No comparable-price history is invented, and a missing monthly input suppresses the chart. Other mapped examples are NF-118, NF-355 and LE-064.
+
+```sh
+npm run pricing:fetch
+npm run pricing:fetch:statfin
+npm run pricing:analyze
+```
+
+These are developer ingestion/diagnostic commands. Users receive analysis without running them or entering cost assumptions. Public-data snapshots are included for offline replay; source refresh commands require network access. Updated snapshots are used on the next server start. This is automatic analysis of the latest saved evidence, not a continuously live supplier feed. Bundled snapshots make the demo reproducible and usable without internet access. Restart the server after changing evidence or BOM records; ordinary use needs no manual calculation.
+
+Comparable-price checks run alongside the cost model. Quotes must match specification, revision, unit, order quantity, delivery basis and approval, with known landed costs and valid dates. Price packs are normalized explicitly. Expired or incomplete offers are excluded with reasons; historical purchases stay separate from current quotes. Current offer fixtures are illustrative, not actual supplier availability. A quote and a BOM estimate remain separate outputs; neither automatically changes an opening target, LAA or savings ledger.
+
+`npm test` covers calculation, quote eligibility, cached automatic analysis, evidence display and connector edge cases. [Technical ambition and evidence](research/technical-ambition.md).
 
 ## Structure
 
@@ -88,7 +117,14 @@ This version has no backend, authentication, live supplier data, integrations or
 - `src/chart.js`: the SVG sparklines, price chart, spend chart and proportion bars.
 - `src/views.js`: the markup for each view and the detail panel.
 - `src/app.js`: state, events and rendering.
-- `server.mjs`: dependency-free local server; serves only the shell and `src` sources, under a strict Content-Security-Policy.
+- `src/pricing.js`: sourced BOM cost scenarios, lag/FX handling and evidence validation.
+- `src/automatic-pricing.js`: automatic portfolio assessment and price-review reasons.
+- `src/reference-prices.js`, `src/reference-data.js`: comparable-quote validation and illustrative reference records.
+- `pricing-service.mjs`: automatic bundled-evidence analysis, shared cache and stable evidence versions.
+- `src/bom-data.js`: versioned illustrative BOM records and explicit material mappings.
+- `src/index-sources.js`: validated Eurostat and Statistics Finland series decoders.
+- `scripts/fetch-indices.mjs`, `scripts/fetch-statfin.mjs`: public-data snapshot ingestion.
+- `server.mjs`: dependency-free local server; serves the shell, `src` sources and the automatic portfolio analysis endpoint, under a strict Content-Security-Policy.
 - `tests/model.test.js`: data, calculation and persistence checks.
 
 The concept documents remain separate from the implementation.

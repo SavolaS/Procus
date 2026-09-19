@@ -1,0 +1,379 @@
+{
+  "retrievedAt": "2026-09-19T07:27:04.274Z",
+  "series": [
+    {
+      "id": "STATFIN:13m8:241.2.thi-pisteluku21",
+      "key": "steel",
+      "label": "Finland — Basic iron and steel and ferro-alloys, domestic producer-price proxy",
+      "sourceUrl": "https://pxdata.stat.fi/PxWeb/api/v1/en/StatFin/thi/13m8.px",
+      "sourceType": "producer_price_index",
+      "publisher": "Statistics Finland",
+      "unit": "Index, 2021=100",
+      "currency": "EUR",
+      "geography": "FI",
+      "frequency": "monthly",
+      "classification": "CPA 2015",
+      "productCode": "241",
+      "market": "domestic",
+      "sourceDimensions": {
+        "cpa_6_20180101": "241",
+        "thi_hinkasind_1_20180101": "2",
+        "contentscode": "thi-pisteluku21"
+      },
+      "licence": "CC BY 4.0",
+      "attribution": "Source: Statistics Finland, producer price indices, table 13m8. Procus reformatted the data.",
+      "licenceUrl": "https://stat.fi/en/about-us/get-to-know-statistics-finland/legislation/terms-of-use",
+      "limitation": "Domestic product-group producer-price proxy, not a material grade quotation or commodity EUR/kg price. BOM mapping requires explicit review.",
+      "retrievedAt": "2026-09-19T07:27:04.274Z",
+      "providerUpdatedAt": "2026-08-24T05:00:00Z",
+      "observations": [
+        {
+          "period": "2025-01",
+          "value": 91.1,
+          "status": null
+        },
+        {
+          "period": "2025-02",
+          "value": 91.4,
+          "status": null
+        },
+        {
+          "period": "2025-03",
+          "value": 90.8,
+          "status": null
+        },
+        {
+          "period": "2025-04",
+          "value": 92.7,
+          "status": null
+        },
+        {
+          "period": "2025-05",
+          "value": 92.6,
+          "status": null
+        },
+        {
+          "period": "2025-06",
+          "value": 92.6,
+          "status": null
+        },
+        {
+          "period": "2025-07",
+          "value": 90.5,
+          "status": null
+        },
+        {
+          "period": "2025-08",
+          "value": 90,
+          "status": null
+        },
+        {
+          "period": "2025-09",
+          "value": 90.7,
+          "status": null
+        },
+        {
+          "period": "2025-10",
+          "value": 91,
+          "status": null
+        },
+        {
+          "period": "2025-11",
+          "value": 90.6,
+          "status": null
+        },
+        {
+          "period": "2025-12",
+          "value": 90.6,
+          "status": null
+        },
+        {
+          "period": "2026-01",
+          "value": 92.4,
+          "status": null
+        },
+        {
+          "period": "2026-02",
+          "value": 92.3,
+          "status": null
+        },
+        {
+          "period": "2026-03",
+          "value": 94.6,
+          "status": null
+        },
+        {
+          "period": "2026-04",
+          "value": 95.6,
+          "status": null
+        },
+        {
+          "period": "2026-05",
+          "value": 99,
+          "status": null
+        },
+        {
+          "period": "2026-06",
+          "value": 99.5,
+          "status": null
+        },
+        {
+          "period": "2026-07",
+          "value": 99.5,
+          "status": null
+        }
+      ],
+      "rawSha256": "89e58ff7d5695aa48049fdbf96e8538a17bf8298abff54e0c2d762f80dfa3ce4",
+      "metadataSha256": "0d1538165b30b1fb83f33c116dd7cfc69519bdb3b9d079dbab67fb2a85458205",
+      "sourceQuery": {
+        "query": [
+          {
+            "code": "cpa_6_20180101",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "241",
+                "2444"
+              ]
+            }
+          },
+          {
+            "code": "timeperiod_m",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "2025M01",
+                "2025M02",
+                "2025M03",
+                "2025M04",
+                "2025M05",
+                "2025M06",
+                "2025M07",
+                "2025M08",
+                "2025M09",
+                "2025M10",
+                "2025M11",
+                "2025M12",
+                "2026M01",
+                "2026M02",
+                "2026M03",
+                "2026M04",
+                "2026M05",
+                "2026M06",
+                "2026M07"
+              ]
+            }
+          },
+          {
+            "code": "thi_hinkasind_1_20180101",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "2"
+              ]
+            }
+          },
+          {
+            "code": "contentscode",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "thi-pisteluku21"
+              ]
+            }
+          }
+        ],
+        "response": {
+          "format": "json-stat2"
+        }
+      }
+    },
+    {
+      "id": "STATFIN:13m8:2444.2.thi-pisteluku21",
+      "key": "copper",
+      "label": "Finland — Copper, domestic producer-price proxy",
+      "sourceUrl": "https://pxdata.stat.fi/PxWeb/api/v1/en/StatFin/thi/13m8.px",
+      "sourceType": "producer_price_index",
+      "publisher": "Statistics Finland",
+      "unit": "Index, 2021=100",
+      "currency": "EUR",
+      "geography": "FI",
+      "frequency": "monthly",
+      "classification": "CPA 2015",
+      "productCode": "2444",
+      "market": "domestic",
+      "sourceDimensions": {
+        "cpa_6_20180101": "2444",
+        "thi_hinkasind_1_20180101": "2",
+        "contentscode": "thi-pisteluku21"
+      },
+      "licence": "CC BY 4.0",
+      "attribution": "Source: Statistics Finland, producer price indices, table 13m8. Procus reformatted the data.",
+      "licenceUrl": "https://stat.fi/en/about-us/get-to-know-statistics-finland/legislation/terms-of-use",
+      "limitation": "Domestic product-group producer-price proxy, not a material grade quotation or commodity EUR/kg price. BOM mapping requires explicit review.",
+      "retrievedAt": "2026-09-19T07:27:04.274Z",
+      "providerUpdatedAt": "2026-08-24T05:00:00Z",
+      "observations": [
+        {
+          "period": "2025-01",
+          "value": 110.5,
+          "status": null
+        },
+        {
+          "period": "2025-02",
+          "value": 112.3,
+          "status": null
+        },
+        {
+          "period": "2025-03",
+          "value": 114.2,
+          "status": null
+        },
+        {
+          "period": "2025-04",
+          "value": 111.9,
+          "status": null
+        },
+        {
+          "period": "2025-05",
+          "value": 110.7,
+          "status": null
+        },
+        {
+          "period": "2025-06",
+          "value": 111.6,
+          "status": null
+        },
+        {
+          "period": "2025-07",
+          "value": 111.4,
+          "status": null
+        },
+        {
+          "period": "2025-08",
+          "value": 110.5,
+          "status": null
+        },
+        {
+          "period": "2025-09",
+          "value": 112,
+          "status": null
+        },
+        {
+          "period": "2025-10",
+          "value": 117.5,
+          "status": null
+        },
+        {
+          "period": "2025-11",
+          "value": 118.9,
+          "status": null
+        },
+        {
+          "period": "2025-12",
+          "value": 124.3,
+          "status": null
+        },
+        {
+          "period": "2026-01",
+          "value": 137.2,
+          "status": null
+        },
+        {
+          "period": "2026-02",
+          "value": 138.5,
+          "status": null
+        },
+        {
+          "period": "2026-03",
+          "value": 138.4,
+          "status": null
+        },
+        {
+          "period": "2026-04",
+          "value": 136.3,
+          "status": null
+        },
+        {
+          "period": "2026-05",
+          "value": 140.5,
+          "status": null
+        },
+        {
+          "period": "2026-06",
+          "value": 138,
+          "status": null
+        },
+        {
+          "period": "2026-07",
+          "value": 147.9,
+          "status": null
+        }
+      ],
+      "rawSha256": "89e58ff7d5695aa48049fdbf96e8538a17bf8298abff54e0c2d762f80dfa3ce4",
+      "metadataSha256": "0d1538165b30b1fb83f33c116dd7cfc69519bdb3b9d079dbab67fb2a85458205",
+      "sourceQuery": {
+        "query": [
+          {
+            "code": "cpa_6_20180101",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "241",
+                "2444"
+              ]
+            }
+          },
+          {
+            "code": "timeperiod_m",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "2025M01",
+                "2025M02",
+                "2025M03",
+                "2025M04",
+                "2025M05",
+                "2025M06",
+                "2025M07",
+                "2025M08",
+                "2025M09",
+                "2025M10",
+                "2025M11",
+                "2025M12",
+                "2026M01",
+                "2026M02",
+                "2026M03",
+                "2026M04",
+                "2026M05",
+                "2026M06",
+                "2026M07"
+              ]
+            }
+          },
+          {
+            "code": "thi_hinkasind_1_20180101",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "2"
+              ]
+            }
+          },
+          {
+            "code": "contentscode",
+            "selection": {
+              "filter": "item",
+              "values": [
+                "thi-pisteluku21"
+              ]
+            }
+          }
+        ],
+        "response": {
+          "format": "json-stat2"
+        }
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-import { evidenceStrip } from './evidence.js';
+import { demoOpportunity, demoAgentCase } from './demo-flow.js';
+import { evidenceStrip, automaticEvidence, portfolioCoverage, costReason } from './evidence.js';
 import { products, suppliers, states, months, period, signalTypes, agents, activity, conversations } from './data.js';
 import {
   getStatus, potentialSaving, annualSpend, alertLevel, isOpen, computeSpend,
@@ -76,32 +77,44 @@ function agentFinding(ui, compact = false) {
     <span class="p-finding__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16V8l8-4 8 4v8l-8 4-8-4Z"/><path d="m8 13 3-3 3 2 3-5"/></svg></span>
     <div class="p-finding__body"><p class="p-finding__eyebrow">Price Watch <span>·</span> Price increase flagged</p>
       <h2>${esc(product.name)} is up ${Number(product.change.toFixed(1))}%</h2>
-      <p>${esc(product.supplier)} · ${product.id} <span class="p-finding__divider">/</span> ${product.assembly ? esc(product.assembly) : `${eur(saving(product))} potential annual saving`}</p></div>
+      <p>${esc(product.supplier)} · ${product.id} <span class="p-finding__divider">/</span> ${product.assembly ? esc(product.assembly) : 'Automatic price review'}</p></div>
     <button type="button" class="p-button p-button--brand" data-generate="${product.id}">Generate framework <span aria-hidden="true">→</span></button></div>
     ${!compact && product.negotiation ? evidenceStrip(product) : ''}
     ${compact ? '' : `<div class="p-finding__foot"><span>${product.negotiation ? 'Recommended for negotiation · comparisons need buyer validation' : 'Review the evidence before approaching your supplier'}</span><button type="button" class="p-link" data-goto="products" data-product="${product.id}">View part evidence →</button></div>`}
   </section>`;
 }
 
+export function priorityRows(ui) {
+  const priority = [...openItems(ui)].sort((a, b) =>
+    Number(ui.pricingAnalysis?.results?.[b.id]?.status === 'review_price') - Number(ui.pricingAnalysis?.results?.[a.id]?.status === 'review_price') || byPriority(a, b)).slice(0, 5);
+  return priority.map(product => `<li><button type="button" data-goto="products" data-product="${product.id}">
+    <span class="p-alertlist__main"><strong>${esc(product.name)}</strong><span class="p-alertlist__sub">${product.id} · ${esc(product.supplier)}</span>
+      <span class="p-alertlist__reason">${esc(costReason(product, ui.pricingAnalysis))}</span></span>
+    <span class="p-alertlist__value">${eur(saving(product))}<small>${percent(product.change)} price change</small></span>
+    </button></li>`).join('') || '<li class="p-empty">No open signals. All parts remain monitored.</li>';
+}
+
+export function productSignal(product, ui) {
+  const result = ui.pricingAnalysis?.results?.[product.id];
+  const label = product.signal === 'index' ? 'Material cost evidence' : product.signal ? signalTypes[product.signal].short : 'Monitoring';
+  const showBadge = product.signal && !(product.signal === 'index' && result?.status !== 'review_price');
+  return `<span class="p-signal">${showBadge ? signalBadge(product, ui) : ''}<span class="p-signal__text">${esc(label)}</span></span>
+    <small class="p-cost-reason">${esc(costReason(product, ui.pricingAnalysis))}</small>`;
+}
+
 function overview(ui) {
   const totals = computeSpend(products, ui.statuses);
   const counts = alertCounts(products, ui.statuses);
   const stages = pipeline(products, ui.statuses, states);
-  const priority = [...openItems(ui)].sort(byPriority).slice(0, 5);
   const running = agents.filter(a => a.state === 'running' && !ui.paused.includes(a.id)).length;
-  return `<div class="p-kpis">
-    ${kpi({ label: 'Products monitored', value: `${products.length}<small> / ${products.length}</small>`, note: `${suppliers.length} suppliers · entire portfolio in scope` })}
+  return `${demoOpportunity()}<div class="p-kpis">
+    ${kpi({ label: 'Products monitored', value: `${products.length}<small> / ${products.length}</small>`, note: `<span data-portfolio-coverage>${esc(portfolioCoverage(products, ui.pricingAnalysis))}</span>` })}
     ${kpi({ label: 'Open opportunity', value: eur(totals.remaining), note: 'Potential annual savings · not yet agreed' })}
     ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${eur(totals.realised)} realised on invoices`, tone: 'success' })}
     ${kpi({ label: 'Active negotiations', value: String(stages[2].items.length), note: `${counts.critical} critical price signals to review` })}
   </div>
-  ${agentFinding(ui)}
   <div class="p-grid p-grid--overview">
-    ${card('Priority parts', `<div class="p-prioritylabels"><span>Part / supplier</span><span>Annual opportunity</span></div><ol class="p-alertlist">
-      ${priority.map(product => `<li><button type="button" data-goto="products" data-product="${product.id}">
-        <span class="p-alertlist__main"><strong>${esc(product.name)}</strong><span class="p-alertlist__sub">${product.id} · ${esc(product.supplier)}</span></span>
-        <span class="p-alertlist__value">${eur(saving(product))}<small>${percent(product.change)} price change</small></span>
-      </button></li>`).join('') || '<li class="p-empty">No open signals. All parts remain monitored.</li>'}</ol>`, { meta: `${counts.total} open signals`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products">View parts →</button>' })}
+    ${card('Priority parts', `<div class="p-prioritylabels"><span>Part / supplier</span><span>Annual opportunity</span></div><ol class="p-alertlist" id="p-priorityparts">${priorityRows(ui)}</ol>`, { meta: `${counts.total} open signals`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products">View parts →</button>' })}
     ${card('Negotiation pipeline', `<ol class="p-pipeline">${stages.filter(s => s.state !== 'No action').map(stage => `<li>
       <button type="button" data-goto="products" data-status="${esc(stage.state)}">
         ${statusPill(stage.state)}<span class="p-pipeline__count">${stage.items.length}</span><strong>${eur(stage.value)}</strong>
@@ -158,9 +171,7 @@ export function productRows(ui) {
           <span class="p-row__sub">${product.id} · ${esc(product.assembly ?? product.category)}</span></button></td>
         <td>${trendCell(product)}</td>
         <td class="p-num">${eur(annualSpend(product))}</td>
-        <td>${product.signal
-          ? `<span class="p-signal">${signalBadge(product, ui)}<span class="p-signal__text">${esc(signalTypes[product.signal].short)}</span></span>`
-          : '<span class="p-quiet">—</span>'}</td>
+        <td data-auto-signal="${product.id}">${productSignal(product, ui)}</td>
         <td>${statusPill(status(product, ui))}</td>
         <td class="p-num${value ? ' p-num--positive' : ''}">${value ? eur(value) : '—'}</td></tr>`;
     }
@@ -277,6 +288,7 @@ function agentsView(ui) {
   const checked = agents.reduce((sum, agent) => sum + agent.checked, 0);
 
   return `
+  ${demoAgentCase(ui)}
   <div class="p-kpis p-kpis--slim">
     ${kpi({ label: 'Agents running', value: `${running} of ${agents.length}`, note: 'Working continuously on your data' })}
     ${kpi({ label: 'Lines checked today', value: integer(checked), note: 'Price lists, invoices and orders' })}
@@ -434,16 +446,16 @@ export function detailPanel(ui) {
     </header>
 
     <section class="p-detail__section">
+      <h3>Why review this price</h3>
       ${product.negotiation ? evidenceStrip(product) : ''}
-      <h3>12-month unit price</h3>
-      ${priceChart(product, product.target)}
-      <p class="p-detail__change" data-direction="${trend(product).direction}">${percent(product.change)} over the period</p>
+      ${automaticEvidence(product, ui.pricingAnalysis)}
+      ${product.signal === 'index' ? '' : `<details class="p-auto-details"><summary>Other demonstration evidence</summary><p>${esc(product.why)}</p><p class="p-detail__source">Illustrative source: ${esc(product.source)}</p></details>`}
     </section>
 
     <section class="p-detail__section">
-      <h3>${product.signal ? 'What Procus found' : 'Monitoring'}</h3>
-      <p>${esc(product.why)}</p>
-      <p class="p-detail__source">Evidence: ${esc(product.source)}</p>
+      <h3>12-month unit price</h3>
+      ${priceChart(product, product.target)}
+      <p class="p-detail__change" data-direction="${trend(product).direction}">${percent(product.change)} over the period</p>
     </section>
 
     <section class="p-detail__section">

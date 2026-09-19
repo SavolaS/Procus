@@ -127,6 +127,9 @@ export function restoreState(saved, products, states) {
   if (saved.alertFilter === 'all' || alertLevels.includes(saved.alertFilter)) restored.alertFilter = saved.alertFilter;
   if (Array.isArray(saved.handled)) restored.handled = saved.handled.filter(id => typeof id === 'string').slice(0, 50);
   if (Array.isArray(saved.paused)) restored.paused = saved.paused.filter(id => typeof id === 'string').slice(0, 20);
+  if (saved.demoCase?.id === 'TM-105' && products.some(product => product.id === saved.demoCase.id)) {
+    restored.demoCase = { id: 'TM-105', prepared: saved.demoCase.prepared === true };
+  }
   if (saved.statuses && typeof saved.statuses === 'object') {
     for (const product of products) {
       if (states.includes(saved.statuses[product.id])) restored.statuses[product.id] = saved.statuses[product.id];
@@ -145,9 +148,9 @@ export function loadState(storage) {
 
 export function persistState(state, storage) {
   try {
-    const { view, selected, query, statusFilter, alertFilter, statuses, handled, paused } = state;
+    const { view, selected, query, statusFilter, alertFilter, statuses, handled, paused, demoCase } = state;
     (storage ?? globalThis.localStorage).setItem(STORAGE_KEY, JSON.stringify({
-      version: 3, view, selected, query, statusFilter, alertFilter, statuses, handled, paused,
+      version: 3, view, selected, query, statusFilter, alertFilter, statuses, handled, paused, demoCase,
     }));
     return true;
   } catch {

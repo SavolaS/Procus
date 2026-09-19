@@ -89,7 +89,7 @@ const catalog = [
 export const signalTypes = {
   increase: { label: 'Unexplained price increase', short: 'Price up', agent: 'Price Watch' },
   benchmark: { label: 'Cheaper qualified source', short: 'Benchmark gap', agent: 'Benchmark' },
-  index: { label: 'Material index divergence', short: 'Index gap', agent: 'Index Tracker' },
+  index: { label: 'Material cost review', short: 'Cost review', agent: 'Index Tracker' },
   fragmented: { label: 'Volume split across suppliers', short: 'Split volume', agent: 'Benchmark' },
   offcontract: { label: 'Buying outside the agreement', short: 'Off contract', agent: 'Contract Watch' },
   expiry: { label: 'Agreement ending soon', short: 'Contract ending', agent: 'Contract Watch' },
@@ -146,9 +146,9 @@ const evidence = {
     source: 'Approved supplier quotes · same specification',
   }),
   index: product => ({
-    why: `The material index behind ${product.category.toLowerCase()} has fallen ${(product.gapPct * 1.7).toFixed(1)} % since the last price setting, but ${product.id} has not moved. At the contracted material share this is worth ${money(product.price - product.target)} per unit.`,
-    next: `Apply the index clause in the agreement and request the adjustment from ${product.contact} before the next order.`,
-    source: 'Contract index clause + published material index',
+    why: `${product.id} is monitored for material-cost movement. The automatic analysis checks the available BOM and matched index evidence before identifying a price-review reason.`,
+    next: `Use the automatic cost finding to prepare the review with ${product.contact}; request any missing material breakdown or index mapping.`,
+    source: 'Automatic BOM and index assessment; no verified contractual index clause supplied',
   }),
   fragmented: product => ({
     why: `The same specification is bought from three suppliers at ${money(product.price)}, ${money(round(product.price * 0.93))} and ${money(product.target)}. Consolidating the annual volume onto the lowest qualified source closes a ${product.gapPct.toFixed(1)} % gap.`,
@@ -194,9 +194,9 @@ export const products = catalog.flatMap(([supplierName, rows]) => {
       product.negotiation = { openingPct: 10, laaPct: 6, indexChange: 3, comparableGap: 8, alternativeGap: 11 };
     }
     const copy = id === 'TM-105' ? {
-      why: 'The unit price increased from €20.00 to €22.40 (+12%) over Oct 2025–Sep 2026. Aluminium rose 3% in the same period. An internal comparable is 8% below the current price and an indicative alternative quote is 11% below. Confirm equivalent specifications, delivered cost and supplier qualification before using either comparison.',
+      why: 'The pitch example shows the unit price increasing from €20.00 to €22.40 (+12%), aluminium +3% over the same period, an internal comparable 8% below the current price and an indicative alternative quote 11% below. These are illustrative comparisons from the pitch, not retrieved market evidence. Confirm specifications, delivered cost and qualification. A verified aluminium BOM and index mapping are still needed for the sourced cost assessment.',
       next: 'Review the proposed 10% opening reduction and 6% internal minimum, then prepare the supplier conversation. Request alternative quotes if the current supplier cannot meet the terms.',
-      source: 'Invoice history · aluminium index · internal part comparison · indicative RFQ response',
+      source: 'Founder pitch, procus-pitch.md §11: illustrative price, index and quote signals; sourced aluminium BOM assessment unavailable',
     } : signal ? evidence[signal](product) : quietEvidence(product);
     return { ...product, ...copy, flag: signal ? signalTypes[signal].short : '' };
   });
@@ -204,23 +204,23 @@ export const products = catalog.flatMap(([supplierName, rows]) => {
 
 // What the agents have been doing. Newest first.
 export const agents = [
-  { id: 'price-watch', name: 'Price Watch', state: 'running', role: 'Reads every price list and invoice line and flags movement that has no explanation behind it.', now: 'Flagged TM-105: unit price +12% against aluminium +3% over the same period.', lastRun: '4 minutes ago', checked: 18420, found: 11 },
+  { id: 'price-watch', name: 'Price Watch', state: 'running', role: 'Reads every price list and invoice line and flags movement that has no explanation behind it.', now: 'TM-105 unit price increased 12%; the automatic assessment identifies missing aluminium cost evidence.', lastRun: '4 minutes ago', checked: 18420, found: 11 },
   { id: 'benchmark', name: 'Benchmark', state: 'running', role: 'Matches your specifications against quotes from qualified alternative sources.', now: 'Matching 6 fastener specifications across three suppliers for duplicate part numbers.', lastRun: '12 minutes ago', checked: 4860, found: 13 },
-  { id: 'index', name: 'Index Tracker', state: 'idle', role: 'Applies contractual index clauses when published material indices move.', now: 'Aluminium comparison complete for TM-105. Waiting for the next index release.', lastRun: '2 hours ago', checked: 940, found: 5 },
+  { id: 'index', name: 'Index Tracker', state: 'running', role: 'Checks matched BOM costs against published index snapshots and explains price-review signals or missing evidence.', now: 'Cost findings are calculated automatically for the portfolio. Unsupported material mappings remain requests for evidence.', lastRun: 'On workspace load', checked: 49, found: 0 },
   { id: 'negotiator', name: 'Negotiation Desk', state: 'waiting', role: 'Prepares briefs, drafts supplier messages and tracks replies. Never sends without approval.', now: '4 messages sent and awaiting supplier replies, 2 drafts waiting for your approval.', lastRun: '38 minutes ago', checked: 21, found: 6 },
   { id: 'contract', name: 'Contract Watch', state: 'running', role: 'Watches agreement end dates, notice periods and orders placed outside the agreement.', now: 'Checking notice periods on two agreements that renew automatically within 90 days.', lastRun: '1 hour ago', checked: 8, found: 4 },
   { id: 'data-quality', name: 'Data Quality', state: 'blocked', role: 'Keeps part numbers, units and specifications aligned across systems.', now: 'Blocked: 3 part numbers have conflicting units of measure in the ERP export.', lastRun: '6 hours ago', checked: 48, found: 3 },
 ];
 
 export const activity = [
-  { time: '09:42', agent: 'Price Watch', kind: 'found', text: 'Flagged TM-105 Aluminium housing — price +12%, aluminium +3%. A negotiation framework can be prepared.', product: 'TM-105' },
+  { time: '09:42', agent: 'Price Watch', kind: 'found', text: 'Flagged TM-105 Aluminium housing — price +12%. Review comparable-price evidence while the material mapping is incomplete.', product: 'TM-105' },
   { time: '09:38', agent: 'Negotiation Desk', kind: 'reply', text: 'Nordform replied on NF-231 Welded frame assembly and offered €82.10 against the €79.31 target.', product: 'NF-231' },
   { time: '09:15', agent: 'Benchmark', kind: 'found', text: 'Matched AF-012 Socket screw to two qualified sources at 14 % below the current price.', product: 'AF-012' },
   { time: '08:57', agent: 'Contract Watch', kind: 'alert', text: 'Rhein Präzision agreement enters its notice period in 21 days and renews at list price by default.', product: 'RP-162' },
   { time: '08:31', agent: 'Negotiation Desk', kind: 'sent', text: 'Sent the approved price review request for BC-208 Connecting flange to Baltic Components.', product: 'BC-208' },
   { time: '08:04', agent: 'Data Quality', kind: 'blocked', text: 'Cannot reconcile VP-130 Cable grommet: ERP reports pieces, supplier invoices report boxes of 500.', product: 'VP-130' },
   { time: 'Yesterday', agent: 'Negotiation Desk', kind: 'done', text: 'Kraków Tooling confirmed the index adjustment on KT-077 Wear plate. Agreed €43.89 from 1 October.', product: 'KT-077' },
-  { time: 'Yesterday', agent: 'Index Tracker', kind: 'found', text: 'Compared TM-105 with the aluminium index: +3% in the same twelve months, against +12% unit price.', product: 'TM-105' },
+  { time: 'Yesterday', agent: 'Index Tracker', kind: 'found', text: 'TM-105 needs an aluminium BOM and applicable source series before a material-cost comparison can be calculated.', product: 'TM-105' },
   { time: 'Yesterday', agent: 'Price Watch', kind: 'found', text: 'Flagged BC-388 Spacer sleeve — third increase in twelve months, now 12.4 % above the starting price.', product: 'BC-388' },
 ];
 

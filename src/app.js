@@ -1,3 +1,4 @@
+import { demoProduct } from './demo-flow.js';
 import { rfqDraft } from './rfq.js';
 import { negotiationDialog, supplierDraft } from './negotiation.js';
 import { products, states, suppliers, conversations, agents, period } from './data.js';
@@ -5,7 +6,8 @@ import {
   getStatus, alertCounts, isOpen, computeSpend,
   restoreState, persistState, loadState, openStates,
 } from './model.js';
-import { renderers, detailPanel, productRows, viewMeta, eur, topOpportunity } from './views.js';
+import { renderers, detailPanel, productRows, viewMeta, eur, topOpportunity, priorityRows, productSignal } from './views.js';
+import { automaticEvidenceContent, portfolioCoverage } from './evidence.js';
 
 let returnFocus = null;
 const root = document.getElementById('procus-workspace');
@@ -15,7 +17,11 @@ const ui = {
   view: 'overview', selected: products[0].id, query: '', statusFilter: 'all', alertFilter: 'all',
   statuses: {}, handled: [], paused: [], detailOpen: false, brief: false, thread: null, collapsed: [],
   ...restoreState(loadState(), products, states),
+  pricingAnalysis: { status: 'loading', results: {}, analyzedAt: null, error: null },
 };
+
+// A demo entry starts at Overview without clearing saved procurement work.
+if (new URLSearchParams(location.search).get('demo') === '1') ui.view = 'overview';
 
 const save = () => persistState(ui);
 const openCases = () => products.filter(product => isOpen(product, ui.statuses));
@@ -128,6 +134,58 @@ root.addEventListener('keydown', event => {
 });
 
 root.addEventListener('click', async event => {
+  const demoAction = event.target.closest('[data-demo-overview], [data-demo-restart], [data-demo-start], [data-demo-plan], [data-demo-evidence], [data-demo-handoff], [data-demo-agents], [data-demo-framework], [data-demo-prepare]');
+  if (demoAction) {
+    if (demoAction.hasAttribute('data-demo-overview') || demoAction.hasAttribute('data-demo-restart')) {
+      if (demoAction.hasAttribute('data-demo-restart')) {
+        delete ui.demoCase;
+        delete ui.demoDraft;
+        delete ui.demoSubject;
+      }
+      ui.negotiation = null;
+      ui.detailOpen = false;
+      ui.view = 'overview';
+      render();
+      window.scrollTo({ top: 0 });
+      $('[data-demo-start]')?.focus({ preventScroll: true });
+      save();
+      return;
+    }
+    if (demoAction.hasAttribute('data-demo-start') || demoAction.hasAttribute('data-demo-framework')) {
+      returnFocus = demoAction.hasAttribute('data-demo-start') ? '[data-demo-start]' : '[data-demo-framework]';
+      ui.detailOpen = false;
+      ui.negotiation = { id: demoProduct.id, guided: true,
+        step: demoAction.hasAttribute('data-demo-start') ? 'evidence' : 'plan',
+        draft: ui.demoDraft ?? supplierDraft(demoProduct), subject: ui.demoSubject ?? `Price review · ${demoProduct.id} ${demoProduct.name}` };
+    } else if (demoAction.hasAttribute('data-demo-handoff') || demoAction.hasAttribute('data-demo-agents')) {
+      if (!ui.negotiation?.guided) return;
+      ui.demoCase ??= { id: demoProduct.id, prepared: false };
+      ui.negotiation = null;
+      ui.detailOpen = false;
+      ui.view = 'agents';
+      ui.selected = demoProduct.id;
+      render();
+      $('#p-demo-agent')?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+      save();
+      return;
+    } else if (demoAction.hasAttribute('data-demo-prepare')) {
+      if (ui.demoCase?.id !== demoProduct.id) return;
+      ui.demoCase.prepared = true;
+      returnFocus = '[data-demo-prepare]';
+      ui.negotiation = { id: demoProduct.id, guided: true, step: 'draft',
+        draft: ui.demoDraft ?? supplierDraft(demoProduct), subject: ui.demoSubject ?? `Price review · ${demoProduct.id} ${demoProduct.name}` };
+      save();
+    } else {
+      if (!ui.negotiation?.guided) return;
+      ui.negotiation.step = demoAction.hasAttribute('data-demo-plan') ? 'plan' : 'evidence';
+    }
+    render();
+    $('.p-negotiation')?.focus();
+    return;
+  }
+
+  if (event.target.closest('[data-retry-analysis]')) { loadPricingAnalysis(); return; }
   const generate = event.target.closest('[data-generate]');
   if (generate) {
     const product = products.find(p => p.id === generate.dataset.generate);
@@ -297,6 +355,10 @@ root.addEventListener('input', event => {
     const sourcing = ui.negotiation.step === 'rfq-draft';
     const key = event.target.id === 'p-message-subject' ? sourcing ? 'rfqSubject' : 'subject' : sourcing ? 'rfqDraft' : 'draft';
     ui.negotiation[key] = event.target.value;
+    if (ui.negotiation.guided) {
+      if (key === 'draft') ui.demoDraft = event.target.value;
+      if (key === 'subject') ui.demoSubject = event.target.value;
+    }
     return;
   }
   if (event.target.id !== 'p-search') return;
@@ -320,4 +382,54 @@ root.addEventListener('change', event => {
   }
 });
 
+// Only evidence is patched when analysis arrives. Drafts, focus, drawer state,
+// procurement records and the user's selected view remain untouched.
+function refreshAutomaticEvidence() {
+  for (const node of root.querySelectorAll('[data-portfolio-coverage]')) node.textContent = portfolioCoverage(products, ui.pricingAnalysis);
+  const priority = $('#p-priorityparts');
+  if (priority && !priority.contains(document.activeElement)) priority.innerHTML = priorityRows(ui);
+  for (const node of root.querySelectorAll('[data-auto-signal]')) {
+    const product = products.find(item => item.id === node.dataset.autoSignal);
+    if (product) node.innerHTML = productSignal(product, ui);
+  }
+  for (const node of root.querySelectorAll('[data-auto-evidence]')) {
+    const retryFocused = node.contains(document.activeElement) && document.activeElement.matches('[data-retry-analysis]');
+    if (node.contains(document.activeElement) && !retryFocused) continue;
+    const product = products.find(item => item.id === node.dataset.autoEvidence);
+    if (!product) continue;
+    const expanded = Boolean(node.querySelector('details[open]'));
+    node.innerHTML = automaticEvidenceContent(product, ui.pricingAnalysis, node.dataset.compact === 'true');
+    if (expanded) node.querySelector('details')?.setAttribute('open', '');
+    if (retryFocused) node.querySelector('[data-retry-analysis], summary')?.focus({ preventScroll: true });
+  }
+}
+
+let analysisPending = false;
+async function loadPricingAnalysis() {
+  if (analysisPending) return;
+  analysisPending = true;
+  let evidenceChanged = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch('/api/pricing-analysis', { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) throw new Error(`Source check failed (HTTP ${response.status}).`);
+    const payload = await response.json();
+    if (!payload || !Number.isFinite(Date.parse(payload.analyzedAt)) || !payload.results
+      || Array.isArray(payload.results) || typeof payload.results !== 'object') throw new Error('The analysis response is incomplete.');
+    evidenceChanged = !(payload.evidenceVersion && ui.pricingAnalysis.status === 'ready'
+      && payload.evidenceVersion === ui.pricingAnalysis.evidenceVersion);
+    ui.pricingAnalysis = { status: 'ready', results: payload.results, analyzedAt: payload.analyzedAt,
+      evidenceVersion: payload.evidenceVersion ?? null, error: null };
+  } catch (error) {
+    ui.pricingAnalysis = { status: 'error', results: {}, analyzedAt: null,
+      error: error.name === 'AbortError' ? 'The local evidence request timed out.' : error.message };
+  } finally {
+    clearTimeout(timeout);
+    analysisPending = false;
+    if (evidenceChanged) refreshAutomaticEvidence();
+  }
+}
+
 render();
+loadPricingAnalysis();

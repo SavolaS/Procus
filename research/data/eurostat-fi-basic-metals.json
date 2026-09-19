@@ -1,0 +1,121 @@
+{
+  "id": "ESTAT:sts_inppd_m:M.PRC_PRR_DOM.C24.NSA.I21.FI",
+  "label": "Finland — manufacture of basic metals, domestic producer prices",
+  "sourceUrl": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sts_inppd_m?lang=EN&freq=M&indic_bt=PRC_PRR_DOM&geo=FI&nace_r2=C24&unit=I21&s_adj=NSA&sinceTimePeriod=2025-01",
+  "unit": "Index, 2021=100",
+  "currency": "EUR",
+  "geography": "FI",
+  "frequency": "monthly",
+  "sourceType": "producer_price_index",
+  "publisher": "Eurostat",
+  "datasetDoi": "https://doi.org/10.2908/STS_INPPD_M",
+  "licence": "Eurostat reuse policy",
+  "licenceUrl": "https://ec.europa.eu/eurostat/help/copyright-notice",
+  "attribution": "Source: Eurostat, sts_inppd_m. Procus reformatted the data and performs its own calculations; Eurostat is not responsible for these transformations or calculations.",
+  "limitation": "Broad domestic output-price proxy; not a steel grade price, raw-material €/kg quote, or total part cost.",
+  "retrievedAt": "2026-09-19T07:29:26.632Z",
+  "providerUpdatedAt": "2026-09-17T11:00:00+0200",
+  "observations": [
+    {
+      "period": "2025-01",
+      "value": 97.6,
+      "status": null
+    },
+    {
+      "period": "2025-02",
+      "value": 97.9,
+      "status": null
+    },
+    {
+      "period": "2025-03",
+      "value": 97.7,
+      "status": null
+    },
+    {
+      "period": "2025-04",
+      "value": 98.8,
+      "status": null
+    },
+    {
+      "period": "2025-05",
+      "value": 98.1,
+      "status": null
+    },
+    {
+      "period": "2025-06",
+      "value": 98.2,
+      "status": null
+    },
+    {
+      "period": "2025-07",
+      "value": 97.7,
+      "status": null
+    },
+    {
+      "period": "2025-08",
+      "value": 98.2,
+      "status": null
+    },
+    {
+      "period": "2025-09",
+      "value": 97.2,
+      "status": null
+    },
+    {
+      "period": "2025-10",
+      "value": 98,
+      "status": null
+    },
+    {
+      "period": "2025-11",
+      "value": 98.7,
+      "status": null
+    },
+    {
+      "period": "2025-12",
+      "value": 99,
+      "status": null
+    },
+    {
+      "period": "2026-01",
+      "value": 100.6,
+      "status": null
+    },
+    {
+      "period": "2026-02",
+      "value": 100.9,
+      "status": null
+    },
+    {
+      "period": "2026-03",
+      "value": 102.8,
+      "status": null
+    },
+    {
+      "period": "2026-04",
+      "value": 103.9,
+      "status": null
+    },
+    {
+      "period": "2026-05",
+      "value": 107.2,
+      "status": null
+    },
+    {
+      "period": "2026-06",
+      "value": 107.5,
+      "status": null
+    },
+    {
+      "period": "2026-07",
+      "value": 108,
+      "status": null
+    },
+    {
+      "period": "2026-08",
+      "value": null,
+      "status": null
+    }
+  ],
+  "rawSha256": "21de915de4a91309f979470ca858d33133dccf30527feeae8a9faa00f0d10c35"
+}

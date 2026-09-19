@@ -383,3 +383,26 @@ Ensimmäisessä demossa riittää näiden havainnollistaminen rajatulla aineisto
 Ensin testataan yksi aineistopolku ja valmistelumateriaali ostajan kanssa. Seuraavaksi lisätään oikeiden tarjousten täydentäminen, valmistelun ajoitus ja tuloksen kytkentä ostodataan. Laajempi kustannusmalli ja autonominen toimittajaviestintä odottavat erillistä päätöstä ja näyttöä tarpeesta. Tutkimuksen prioriteetit ovat kokeiden järjestystä, eivät kaikkien pidemmän aikavälin tavoitteiden peruuttamista.
 
 Avoinna ovat ensimmäinen asiakas ja kategoria, oikean aineiston saatavuus, vertailuperuste, ostajan sallima autonomia ja maksullisen jatkon ehdot. Pilotissa tavoitellaan ehdotuksena vähintään 50 % pienempää aktiivista valmistelutyötä ilman kriittisten vertailuvirheiden kasvua. Tavoite ei ole saavutettu tulos eikä markkinointilupaus. Käyttöönotto-, korjaus- ja tukityö mitataan erikseen, jotta niitä ei piiloteta ostajan ajansäästöön.
+
+## 13. BOM- ja indeksilaskennan käynnistys — 19.9.2026
+
+Perustaja pyysi aloittamaan BOMiin ja raaka-aineindekseihin perustuvan hinnoittelun teknisen kunnianhimon vahvistamiseksi. Tämä nostaa kustannusmallin toteutuksen työn alle aiemman P2-järjestysehdotuksen edelle. Muutos koskee toteutusjärjestystä; se ei lukitse käyttöliittymää tai oikeuta automaattista toimittajaviestintää.
+
+Ensimmäinen toteutus on lähteistetty kustannusskenaario: BOMin nettomäärä, saanto ja materiaalin lähtöhinta yhdistetään tarkasti nimettyyn indeksisarjaan. Laskenta erittelee kustannusvaikutuksen, muuttumattomaksi oletetun muun hinnan sekä läpimenon oletusvälin. Julkisista rajapinnoista haetut tuottajahintaindeksit ovat oikeita havaintoja; demon BOM, lähtöhinta ja kustannusvaikutuksen siirtyminen ostohintaan ovat esimerkkioletuksia. Ne eivät todista osan markkinahintaa tai saatavaa säästöä.
+
+Sopimuskaavan tulos, vertailukelpoinen tarjous, historiallinen ostohinta ja BOM-skenaario säilyvät eri tietotyyppeinä. Puuttuva indeksikuukausi estää laskennan sen sijaan, että se korvattaisiin arvauksella. Jatkokehityksen tutkimusongelma on materiaalikytkentöjen, kustannusosuuksien ja viiveiden oppiminen sekä epävarmuuden todentaminen asiakasaineistolla. [Tekninen toteutus, tutkimuslähteet ja validointipolku](research/technical-ambition.md).
+
+### Perustajan tarkennus: automaattinen analyysi, ei laskuria
+
+BOM- ja indeksihinnoittelu tehdään automaattisesti osien taustalla. Käyttäjältä ei edellytetä erilliseen hinnoitteluvälilehteen siirtymistä tai laskurin täyttämistä. Laskennan tulos selittää nykyisessä osanäkymässä ja neuvotteluvalmistelussa, miksi hinta kannattaa ottaa keskusteluun, miksi kustannusnäyttö ei tue alennuspyyntöä tai mitä tietoa puuttuu. Aiempi Pricing lab -toteutus korvataan tällä toimintatavalla. Lähteet ja laskentaperusteet ovat tarkistettavissa tarvittaessa; automaatio ei tarkoita puuttuvien BOMien, indeksikytkentöjen tai säästöjen keksimistä.
+
+
+### Perustajan tarkennus: tekninen syvyys ilman reaaliaikahakua
+
+Demon tulee näyttää tekninen päättely vakuuttavasti, mutta reaaliaikaista tiedonhakua ei tarvita. Analyysi suoritetaan automaattisesti tallennetuista indeksihavainnoista ja esimerkkiaineistosta. Tekninen syvyys näkyy kustannusvaikutusten erittelyssä, tarjousten yksikkö- ja ehtotarkistuksissa sekä hylkäysten perusteluissa. Palvelin laskee tulokset käynnistyessään ja jakaa saman tuloksen näkymille; ajastettuja hakuja tai selaimen jatkuvaa kyselyä ei käytetä.
+
+## 14. Perustajan vahvistama hackathon-polku — 19.9.2026
+
+Demossa aloitetaan Overview-välilehdeltä selkeästä mahdollisesta toimenpiteestä. Polku näyttää ensin neuvottelun perusteet, sitten neuvottelukehyksen (avauspyyntö ja sisäinen LAA), ja vie saman tapauksen Agents-välilehdelle. Tämä on vahvistettu demovaatimus; se ei laajenna tuotetta itsenäiseen toimittajaviestintään tai sopimusten hyväksymiseen.
+
+Toteutusvalinta on yksi ohjattu TM-105-esimerkkitapaus: Overview-nosto → perusteiden tarkistus → kehys → agentin valmistelutehtävä. Avaus on −10 % eli 20,16 €/kpl ja sisäinen vähimmäisalennus −6 % eli 21,06 €/kpl. Agenttinäkymässä voi valmistella muokattavan toimittajaluonnoksen. LAA pysyy sisäisessä aineistossa; esimerkkivertailut erotetaan oikeasta BOM- ja indeksianalyysistä. Demopolun läpikäynti ei muuta sovittuja tai toteutuneita säästöjä. Uudelleenkäynnistys tyhjentää vain demon valmistelutilan.
