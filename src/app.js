@@ -1,3 +1,4 @@
+import { rfqDraft } from './rfq.js';
 import { negotiationDialog, supplierDraft } from './negotiation.js';
 import { products, states, suppliers, conversations, agents, period } from './data.js';
 import {
@@ -131,14 +132,29 @@ root.addEventListener('click', async event => {
   if (generate) {
     const product = products.find(p => p.id === generate.dataset.generate);
     if (!product || product.target == null) return;
-    returnFocus = `[data-generate="${product.id}"]`;
+    if (!ui.detailOpen) returnFocus = `[data-generate="${product.id}"]`;
     ui.detailOpen = false;
-    ui.negotiation = { id: product.id, step: 'plan', draft: supplierDraft(product) };
+    ui.negotiation = { id: product.id, step: 'plan', draft: supplierDraft(product), subject: `Price review · ${product.id} ${product.name}` };
     render();
     $('.p-negotiation')?.focus();
     return;
   }
   if (event.target.closest('[data-close-negotiation], [data-close-detail]')) { closeOverlay(); return; }
+  if (event.target.closest('[data-find-alternatives], [data-run-rfq], [data-rfq-draft]')) {
+    const flow = ui.negotiation;
+    if (!flow) return;
+    flow.step = 'rfq';
+    if (event.target.closest('[data-run-rfq]')) flow.rfqComplete = true;
+    if (event.target.closest('[data-rfq-draft]')) {
+      const product = products.find(p => p.id === flow.id);
+      flow.step = 'rfq-draft';
+      flow.rfqDraft ??= rfqDraft(product);
+      flow.rfqSubject ??= `Request for quotation · ${product.id} ${product.name}`;
+    }
+    $('#p-overlay').innerHTML = negotiationDialog(ui);
+    $('.p-negotiation')?.focus();
+    return;
+  }
   if (event.target.closest('[data-draft-message], [data-plan-back]')) {
     ui.negotiation.step = event.target.closest('[data-draft-message]') ? 'draft' : 'plan';
     $('#p-overlay').innerHTML = negotiationDialog(ui);
@@ -147,7 +163,9 @@ root.addEventListener('click', async event => {
   }
   if (event.target.closest('[data-copy-draft]')) {
     try {
-      await navigator.clipboard.writeText(ui.negotiation.draft);
+      const flow = ui.negotiation;
+      const sourcing = flow.step === 'rfq-draft';
+      await navigator.clipboard.writeText(`Subject: ${sourcing ? flow.rfqSubject : flow.subject}\n\n${sourcing ? flow.rfqDraft : flow.draft}`);
       $('#p-draft-feedback').textContent = 'Draft copied. Nothing has been sent.';
     } catch {
       $('#p-message-body').focus();
@@ -275,7 +293,12 @@ root.addEventListener('click', async event => {
 });
 
 root.addEventListener('input', event => {
-  if (event.target.id === 'p-message-body' && ui.negotiation) { ui.negotiation.draft = event.target.value; return; }
+  if (ui.negotiation && ['p-message-body', 'p-message-subject'].includes(event.target.id)) {
+    const sourcing = ui.negotiation.step === 'rfq-draft';
+    const key = event.target.id === 'p-message-subject' ? sourcing ? 'rfqSubject' : 'subject' : sourcing ? 'rfqDraft' : 'draft';
+    ui.negotiation[key] = event.target.value;
+    return;
+  }
   if (event.target.id !== 'p-search') return;
   ui.query = event.target.value;
   refreshRows();

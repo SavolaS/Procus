@@ -17,8 +17,8 @@ test('the sample data set is large enough to show a portfolio, not a demo', () =
 
 test('baseline spend, opportunity and agreed savings share one set of volume assumptions', () => {
   assert.deepEqual(computeSpend(products), {
-    current: 25725890, potential: 1457631, agreed: 185032, realised: 34469,
-    projected: 25540858, remaining: 1272599,
+    current: 25736290, potential: 1487271, agreed: 185032, realised: 34469,
+    projected: 25551258, remaining: 1302239,
   });
 });
 
@@ -73,7 +73,7 @@ test('severity follows what a signal is worth, and parts without a signal never 
   assert.equal(alertLevel({ signal: 'increase', price: 10, target: 9, qty: 100000, change: 2 }), 'critical');
   assert.equal(alertLevel({ signal: 'benchmark', price: 10, target: 9.6, qty: 100000, change: 1 }), 'warning');
   assert.equal(alertLevel({ signal: 'benchmark', price: 10, target: 9.9, qty: 10000, change: 1 }), 'watch');
-  assert.deepEqual(alertCounts(products), { critical: 8, warning: 15, watch: 10, total: 33 });
+  assert.deepEqual(alertCounts(products), { critical: 9, warning: 15, watch: 9, total: 33 });
 });
 
 test('only open cases alert, so agreeing or dismissing one clears it', () => {

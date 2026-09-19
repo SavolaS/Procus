@@ -37,7 +37,7 @@ const catalog = [
     ['BC-388', 'Spacer sleeve', 'Turned parts', 88000, 2.35, 12.4, 'increase', 9, 'New'],
   ]],
   ['Tekno Metal AB', [
-    ['TM-105', 'Aluminium housing', 'Castings', 26000, 22, 0.8, 'index', 5, 'Under review'],
+    ['TM-105', 'Aluminium housing', 'Castings', 26000, 22.4, 12, 'increase', 10, 'Under review'],
     ['TM-140', 'Die-cast end cap', 'Castings', 74000, 7.4, 5.8, 'benchmark', 6, 'New'],
     ['TM-198', 'Heat sink profile', 'Extrusions', 38000, 14.9, 3.2, 'index', 4.2, 'New'],
     ['TM-220', 'Hex bolt · M10', 'Fasteners', 310000, 0.8, 1.4, 'fragmented', 11, 'New'],
@@ -188,30 +188,39 @@ export const products = catalog.flatMap(([supplierName, rows]) => {
       verifiedMonths: verifiedMonths[id] ?? 0,
       daysInStage: signal ? 3 + Math.floor(random() * 26) : 0,
     };
-    const copy = signal ? evidence[signal](product) : quietEvidence(product);
+    // One coherent illustrative pitch scenario, shared by every screen and total.
+    if (id === 'TM-105') {
+      product.assembly = 'Conveyor drive module';
+      product.negotiation = { openingPct: 10, laaPct: 6, indexChange: 3, comparableGap: 8, alternativeGap: 11 };
+    }
+    const copy = id === 'TM-105' ? {
+      why: 'The unit price increased from €20.00 to €22.40 (+12%) over Oct 2025–Sep 2026. Aluminium rose 3% in the same period. An internal comparable is 8% below the current price and an indicative alternative quote is 11% below. Confirm equivalent specifications, delivered cost and supplier qualification before using either comparison.',
+      next: 'Review the proposed 10% opening reduction and 6% internal minimum, then prepare the supplier conversation. Request alternative quotes if the current supplier cannot meet the terms.',
+      source: 'Invoice history · aluminium index · internal part comparison · indicative RFQ response',
+    } : signal ? evidence[signal](product) : quietEvidence(product);
     return { ...product, ...copy, flag: signal ? signalTypes[signal].short : '' };
   });
 });
 
 // What the agents have been doing. Newest first.
 export const agents = [
-  { id: 'price-watch', name: 'Price Watch', state: 'running', role: 'Reads every price list and invoice line and flags movement that has no explanation behind it.', now: 'Comparing the September price list from Lumen Electro against 24 months of invoices.', lastRun: '4 minutes ago', checked: 18420, found: 11 },
+  { id: 'price-watch', name: 'Price Watch', state: 'running', role: 'Reads every price list and invoice line and flags movement that has no explanation behind it.', now: 'Flagged TM-105: unit price +12% against aluminium +3% over the same period.', lastRun: '4 minutes ago', checked: 18420, found: 11 },
   { id: 'benchmark', name: 'Benchmark', state: 'running', role: 'Matches your specifications against quotes from qualified alternative sources.', now: 'Matching 6 fastener specifications across three suppliers for duplicate part numbers.', lastRun: '12 minutes ago', checked: 4860, found: 13 },
-  { id: 'index', name: 'Index Tracker', state: 'idle', role: 'Applies contractual index clauses when published material indices move.', now: 'Waiting for the October aluminium index publication.', lastRun: '2 hours ago', checked: 940, found: 5 },
+  { id: 'index', name: 'Index Tracker', state: 'idle', role: 'Applies contractual index clauses when published material indices move.', now: 'Aluminium comparison complete for TM-105. Waiting for the next index release.', lastRun: '2 hours ago', checked: 940, found: 5 },
   { id: 'negotiator', name: 'Negotiation Desk', state: 'waiting', role: 'Prepares briefs, drafts supplier messages and tracks replies. Never sends without approval.', now: '4 messages sent and awaiting supplier replies, 2 drafts waiting for your approval.', lastRun: '38 minutes ago', checked: 21, found: 6 },
   { id: 'contract', name: 'Contract Watch', state: 'running', role: 'Watches agreement end dates, notice periods and orders placed outside the agreement.', now: 'Checking notice periods on two agreements that renew automatically within 90 days.', lastRun: '1 hour ago', checked: 8, found: 4 },
   { id: 'data-quality', name: 'Data Quality', state: 'blocked', role: 'Keeps part numbers, units and specifications aligned across systems.', now: 'Blocked: 3 part numbers have conflicting units of measure in the ERP export.', lastRun: '6 hours ago', checked: 48, found: 3 },
 ];
 
 export const activity = [
-  { time: '09:42', agent: 'Price Watch', kind: 'found', text: 'Flagged LE-064 Control cable — unit price up 14.2 % with no specification change.', product: 'LE-064' },
+  { time: '09:42', agent: 'Price Watch', kind: 'found', text: 'Flagged TM-105 Aluminium housing — price +12%, aluminium +3%. A negotiation framework can be prepared.', product: 'TM-105' },
   { time: '09:38', agent: 'Negotiation Desk', kind: 'reply', text: 'Nordform replied on NF-231 Welded frame assembly and offered €82.10 against the €79.31 target.', product: 'NF-231' },
   { time: '09:15', agent: 'Benchmark', kind: 'found', text: 'Matched AF-012 Socket screw to two qualified sources at 14 % below the current price.', product: 'AF-012' },
   { time: '08:57', agent: 'Contract Watch', kind: 'alert', text: 'Rhein Präzision agreement enters its notice period in 21 days and renews at list price by default.', product: 'RP-162' },
   { time: '08:31', agent: 'Negotiation Desk', kind: 'sent', text: 'Sent the approved price review request for BC-208 Connecting flange to Baltic Components.', product: 'BC-208' },
   { time: '08:04', agent: 'Data Quality', kind: 'blocked', text: 'Cannot reconcile VP-130 Cable grommet: ERP reports pieces, supplier invoices report boxes of 500.', product: 'VP-130' },
   { time: 'Yesterday', agent: 'Negotiation Desk', kind: 'done', text: 'Kraków Tooling confirmed the index adjustment on KT-077 Wear plate. Agreed €43.89 from 1 October.', product: 'KT-077' },
-  { time: 'Yesterday', agent: 'Index Tracker', kind: 'found', text: 'Aluminium index down 8.5 % since the last price setting — TM-105 and TM-198 are eligible for adjustment.', product: 'TM-105' },
+  { time: 'Yesterday', agent: 'Index Tracker', kind: 'found', text: 'Compared TM-105 with the aluminium index: +3% in the same twelve months, against +12% unit price.', product: 'TM-105' },
   { time: 'Yesterday', agent: 'Price Watch', kind: 'found', text: 'Flagged BC-388 Spacer sleeve — third increase in twelve months, now 12.4 % above the starting price.', product: 'BC-388' },
 ];
 
