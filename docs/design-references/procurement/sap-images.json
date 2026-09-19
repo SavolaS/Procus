@@ -1,0 +1,19 @@
+{
+  "url": "https://www.sap.com/products/spend-management/category-management-software.html",
+  "imgs": [
+    {
+      "src": "https://content.cdn.sap.com/is/image/sap/sap-category-management-lb-spndpf-producthero:L?wid=775&hei=550&fit=stretch,1&fmt=png-alpha&resMode=sharp2",
+      "alt": "Screenshot of a dashboard in SAP Ariba Category Management",
+      "rect": {
+        "x": 0,
+        "y": 258.390625,
+        "width": 775,
+        "height": 550
+      },
+      "natural": [
+        775,
+        550
+      ]
+    }
+  ]
+}

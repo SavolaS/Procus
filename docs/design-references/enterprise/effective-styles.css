@@ -1,0 +1,20 @@
+/* Research only. Effective computed values from public rendered Storybooks.
+   Not copied stylesheet source; see *-metrics.json for exact elements and geometry. */
+/* Carbon toolbar table — captured 2026-09-19, white theme */
+.reference-carbon-table th { height:48px; padding:0 16px; font-size:14px; line-height:18px; font-weight:600; color:#161616; background:#e0e0e0; }
+.reference-carbon-table td { height:48px; padding:0 16px; font-size:14px; line-height:18px; font-weight:400; color:#525252; border-bottom:1px solid #c6c6c6; }
+.reference-carbon-table .primary { height:48px; background:#0f62fe; color:white; border-radius:0; }
+/* Carbon tabs — selected state */
+.reference-carbon-tab { height:40px; padding:0 16px; font-size:14px; line-height:18px; border-radius:0; }
+.reference-carbon-tab[aria-selected=true] { font-weight:600; border-bottom:2px solid #0f62fe; }
+/* Fluent data grid: rendered row includes 1px bottom border */
+.reference-fluent-grid { font-size:14px; line-height:20px; color:#242424; }
+.reference-fluent-grid .header { height:33px; border-bottom:1px solid #e0e0e0; }
+.reference-fluent-grid .row { height:45px; border-bottom:1px solid #e0e0e0; }
+/* Fluent drawer */
+.reference-fluent-drawer { width:320px; background:#fff; color:#242424; font-size:14px; line-height:20px; }
+.reference-fluent-drawer header { height:64px; padding:24px 24px 8px; }
+.reference-fluent-drawer .body { padding:0 24px 25px; }
+.reference-fluent-button { height:32px; padding:5px 12px; font-size:14px; line-height:20px; font-weight:600; border:1px solid transparent; border-radius:4px; background:#0f6cbd; color:#fff; }
+/* Fluent navigation */
+.reference-fluent-nav { width:260px; background:#f0f0f0; color:#242424; font-size:14px; line-height:20px; }

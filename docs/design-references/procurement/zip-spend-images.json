@@ -1,0 +1,75 @@
+{
+  "url": "https://zip.com/capabilities/spend-insights",
+  "imgs": [
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec8a530c9a9e0e70b69351_spendheader-p-1600.png",
+      "alt": "",
+      "rect": {
+        "x": 660,
+        "y": 194.8125,
+        "width": 700,
+        "height": 485.1875
+      },
+      "natural": [
+        1440,
+        998
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec8a521cab6fc693239278_spend1.png",
+      "alt": "Real-time spend insights",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec8a520e979d903d8dc53d_spend2.png",
+      "alt": "End-to-end productivity metrics",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec8a527ccb6670e64825ec_spend3.png",
+      "alt": "Granular savings tracking",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec8a527ccb6670e64825c7_spend4.png",
+      "alt": "Seamless reporting",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    }
+  ]
+}

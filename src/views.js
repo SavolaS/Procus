@@ -75,7 +75,7 @@ function agentFinding(ui, compact = false) {
   return `<section class="p-finding p-finding--evidence" aria-label="Agent price alert"><div class="p-finding__top">
     <span class="p-finding__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16V8l8-4 8 4v8l-8 4-8-4Z"/><path d="m8 13 3-3 3 2 3-5"/></svg></span>
     <div class="p-finding__body"><p class="p-finding__eyebrow">Price Watch <span>·</span> Price increase flagged</p>
-      <h2>${esc(product.name)} is up ${product.change.toFixed(1)}%</h2>
+      <h2>${esc(product.name)} is up ${Number(product.change.toFixed(1))}%</h2>
       <p>${esc(product.supplier)} · ${product.id} <span class="p-finding__divider">/</span> ${product.assembly ? esc(product.assembly) : `${eur(saving(product))} potential annual saving`}</p></div>
     <button type="button" class="p-button p-button--brand" data-generate="${product.id}">Generate framework <span aria-hidden="true">→</span></button></div>
     ${!compact && product.negotiation ? evidenceStrip(product) : ''}
@@ -144,7 +144,7 @@ export function productRows(ui) {
         <span class="p-row__supplier"><strong>${esc(supplier.name)}</strong>
         <span class="p-row__sub">${esc(supplier.country)} · ${esc(supplier.focus)} · ${rows.length} ${rows.length === 1 ? 'part' : 'parts'}</span></span></button></td>
       <td class="p-num">${eur(totals.current)}</td>
-      <td><span class="p-quiet">${counts.total} open signals</span></td>
+      <td><span class="p-quiet">${counts.total} open ${counts.total === 1 ? 'signal' : 'signals'}</span></td>
       <td></td>
       <td class="p-num">${totals.potential ? `<strong>${eur(totals.potential)}</strong>` : '—'}</td></tr>`;
     if (collapsed) continue;

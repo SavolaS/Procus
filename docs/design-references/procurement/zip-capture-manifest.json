@@ -1,0 +1,87 @@
+[
+  {
+    "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec971f060791aa4c9df981_mid2.avif",
+    "alt": "Automate intake. \nCreate true visibility.",
+    "rect": {
+      "x": 728,
+      "y": 1090.390625,
+      "width": 632,
+      "height": 452.140625
+    },
+    "natural": [
+      2516,
+      1800
+    ],
+    "file": "zip-component-1.png",
+    "page": "https://zip.com/solutions/enterprise",
+    "kind": "Embedded marketing raster shown in browser; not live app DOM"
+  },
+  {
+    "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec980f1908d3cc9258b887_enterprise2.avif",
+    "alt": "Orchestrate complex procurement workflows\n",
+    "rect": {
+      "x": 728,
+      "y": 1689.53125,
+      "width": 632,
+      "height": 451.953125
+    },
+    "natural": [
+      2517,
+      1800
+    ],
+    "file": "zip-component-2.png",
+    "page": "https://zip.com/solutions/enterprise",
+    "kind": "Embedded marketing raster shown in browser; not live app DOM"
+  },
+  {
+    "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/67951afb2556a4d76856f707_Image.webp",
+    "alt": "Save time with  AI decision making",
+    "rect": {
+      "x": 728,
+      "y": 2288.484375,
+      "width": 632,
+      "height": 451.90625
+    },
+    "natural": [
+      1888,
+      1350
+    ],
+    "file": "zip-component-3.png",
+    "page": "https://zip.com/solutions/enterprise",
+    "kind": "Embedded marketing raster shown in browser; not live app DOM"
+  },
+  {
+    "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec980f62832545988dde77_enterprise3.avif",
+    "alt": "Drive more cross-functional visibility",
+    "rect": {
+      "x": 728,
+      "y": 2887.390625,
+      "width": 632,
+      "height": 451.953125
+    },
+    "natural": [
+      2517,
+      1800
+    ],
+    "file": "zip-component-4.png",
+    "page": "https://zip.com/solutions/enterprise",
+    "kind": "Embedded marketing raster shown in browser; not live app DOM"
+  },
+  {
+    "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec980f0e979d903d9b66a6_enterprise4.avif",
+    "alt": "Reduce overhead maintenance costs",
+    "rect": {
+      "x": 728,
+      "y": 3486.34375,
+      "width": 632,
+      "height": 451.953125
+    },
+    "natural": [
+      2517,
+      1800
+    ],
+    "file": "zip-component-5.png",
+    "page": "https://zip.com/solutions/enterprise",
+    "kind": "Embedded marketing raster shown in browser; not live app DOM"
+  }
+]

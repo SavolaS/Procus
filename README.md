@@ -28,7 +28,7 @@ Interactive procurement workspace prototype. Five connected views:
 
 All views share the same fictional data: 49 parts across 8 European suppliers, about €25.7M of annual spend. The figures are generated from a fixed seed, so every reload, test run and screenshot shows the same numbers.
 
-The interface follows the Salesforce Lightning Design System. [DESIGN.md](DESIGN.md) records the token set and component rules extracted from Salesforce's published packages, and `src/styles.css` implements it using the same token names so the two can be checked against each other.
+The interface uses an original enterprise design informed by measured Salesforce, Carbon, Fluent and procurement-product references. [DESIGN.md](DESIGN.md) links the master contract, source PNG gallery, UX principles and validation record.
 
 ## Run
 
@@ -55,6 +55,14 @@ npm test
 - Move between views from the alerts, the pipeline and the agent activity feed.
 - Stage changes, the active view, selection, filters, handled decisions and paused agents persist in this browser using localStorage.
 
+## Deck-aligned demo
+
+Overview → **Generate framework** on TM-105 Aluminium housing. The shared example shows price +12%, aluminium +3%, internal comparable −8% and an indicative alternative −11%. The framework proposes an opening ask of −10% (€20.16) and an internal LAA of −6% (€21.06) against the current €22.40 price.
+
+**Draft supplier message** opens editable subject/body and Copy. The private LAA never enters generated supplier text. **Find alternatives** → **Run RFQ agent demo** → **Prepare RFQ draft** demonstrates optional sourcing. It is local and illustrative: no remote agent runs and no suppliers are contacted. Drafts persist only while the preparation session remains open.
+
+The overview prioritises portfolio monitoring and parts requiring action, with historical spend beneath. Workflow uses a compact finding; Agents puts the roster alongside expandable decisions. The source PNGs in `docs/design-references` are research material, not shipped application assets.
+
 ## What the numbers mean
 
 All suppliers, prices, signals and volumes are fictional. Three savings figures are deliberately kept apart and must never be added together:
@@ -70,7 +78,10 @@ This version has no backend, authentication, live supplier data, integrations or
 ## Structure
 
 - `index.html`: application shell — global header and view navigation.
-- `DESIGN.md`: the Salesforce Lightning token set and component rules this UI implements.
+- `DESIGN.md`: entry point to the master design contract, captured reference PNGs and validation notes.
+- `src/evidence.js`: shared price/index/comparable evidence display.
+- `src/negotiation.js`: internal framework and editable supplier draft.
+- `src/rfq.js`: optional local RFQ preparation demo and supplier-facing request.
 - `src/styles.css`: the design tokens and every component rule.
 - `src/data.js`: fictional parts, suppliers, agents and supplier conversations.
 - `src/model.js`: spend, severity, pipeline and savings calculations, and validated browser persistence.

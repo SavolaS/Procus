@@ -1,0 +1,15 @@
+/* Proposed Procus interpretation of verified screenshot patterns.
+   NOT vendor CSS. No live app CSS was accessible in the captured sources.
+   Evidence: ramp-purchase-orders-table.png and ramp-requests-toolbar-table.png. */
+.procus-table { width: 100%; border-collapse: collapse; font: 400 14px/20px system-ui, sans-serif; }
+.procus-table th { height: 36px; padding: 0 16px; text-align: left; font-size: 12px; font-weight: 500; }
+.procus-table td { height: 48px; padding: 0 16px; vertical-align: middle; border-bottom: 1px solid var(--border-subtle); }
+.procus-table tr[data-two-line] td { height: 60px; }
+.procus-table :is(th,td)[data-numeric] { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.procus-table :is(th,td)[data-selection] { width: 40px; padding: 0 12px; }
+.procus-table :is(th,td)[data-status] { width: 144px; }
+.procus-table [data-secondary] { display: block; color: var(--text-secondary); font-size: 12px; line-height: 16px; }
+.procus-toolbar { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.procus-toolbar [data-actions] { margin-left: auto; display: flex; gap: 8px; }
+.procus-notification { display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: start; gap: 12px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 6px; }
+.procus-notification [data-metric] { font-variant-numeric: tabular-nums; }

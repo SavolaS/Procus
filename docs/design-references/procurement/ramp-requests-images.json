@@ -1,0 +1,89 @@
+{
+  "url": "https://support.ramp.com/ramp-procurement-quick-start-guide",
+  "imgs": [
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/49370695595411.png",
+      "alt": "Program template picker showing category templates and Start from scratch options",
+      "rect": {
+        "x": 272,
+        "y": 1993,
+        "width": 686.5625,
+        "height": 520.453125
+      },
+      "natural": [
+        1087,
+        824
+      ]
+    },
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/49370695597203.png",
+      "alt": "Requests page showing pending procurement requests with owner, type, outcome, and status columns",
+      "rect": {
+        "x": 272,
+        "y": 2969.453125,
+        "width": 686.5625,
+        "height": 303.703125
+      },
+      "natural": [
+        1535,
+        679
+      ]
+    },
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/49370724584339.png",
+      "alt": "Purchase orders list showing vendors, statuses, amounts, and billing progress",
+      "rect": {
+        "x": 272,
+        "y": 3801.15625,
+        "width": 686.5625,
+        "height": 410.15625
+      },
+      "natural": [
+        1535,
+        917
+      ]
+    },
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/51121392307987.png",
+      "alt": "Bill Pay settings Permissions tab showing Accounts Payable assignments with entity restrictions, Approvers, Vendor Network, and Vendor payments toggles",
+      "rect": {
+        "x": 272,
+        "y": 4619.3125,
+        "width": 686.5625,
+        "height": 905.9375
+      },
+      "natural": [
+        1302,
+        1718
+      ]
+    },
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/49370724586131.png",
+      "alt": "Vendors settings showing request settings, vendor forms, and onboarding form configuration",
+      "rect": {
+        "x": 272,
+        "y": 5933.25,
+        "width": 686.5625,
+        "height": 856.875
+      },
+      "natural": [
+        770,
+        961
+      ]
+    },
+    {
+      "src": "https://assets.ramp.com/help-center/ramp-procurement-quick-start-guide/attachments/49370724590483.png",
+      "alt": "Bill Pay settings Importing tab with PO auto-import and overbilling protection controls",
+      "rect": {
+        "x": 272,
+        "y": 7294.125,
+        "width": 686.5625,
+        "height": 835.75
+      },
+      "natural": [
+        787,
+        958
+      ]
+    }
+  ]
+}

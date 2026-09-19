@@ -1,0 +1,75 @@
+{
+  "url": "https://zip.com/capabilities/workflow-engine",
+  "imgs": [
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec7db03f60c216007135fc_workflowheader-p-1600.png",
+      "alt": "",
+      "rect": {
+        "x": 660,
+        "y": 194.8125,
+        "width": 700,
+        "height": 485.1875
+      },
+      "natural": [
+        1440,
+        998
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec7daf027c55b09283ab3b_workflow1.avif",
+      "alt": "No-code configuration",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec7dafdc33a91a265ed20a_workflow2.avif",
+      "alt": "Intelligent workflow templates",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec7daf2ebed48613e1d49e_workflow3.avif",
+      "alt": "Transparent approvals",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/66ba279e03c8e2713df59ea5/66ec7daf3f60c2160071351a_workflow4.avif",
+      "alt": "Integrated process orchestration",
+      "rect": {
+        "x": 617.59375,
+        "y": 1299.625,
+        "width": 742.40625,
+        "height": 810
+      },
+      "natural": [
+        3272,
+        1792
+      ]
+    }
+  ]
+}

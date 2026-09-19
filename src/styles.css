@@ -44,7 +44,7 @@
   --slds-text-weak: var(--slds-neutral-30);
   --slds-text-weakest: var(--slds-neutral-50);
   --slds-border-1: var(--slds-neutral-80);   /* structural: cards, tables */
-  --slds-border-4: #8a98aa;   /* interactive control edges, 4.67:1 */
+  --slds-border-4: #8190a4;   /* interactive edges: at least 3:1 on white */
   --slds-border-focus: var(--slds-brand-40);
 
   /* Accents and links */
@@ -173,7 +173,7 @@ small { font-size: 11px; }
   padding: var(--slds-space-x-small) var(--slds-space-medium); border-top: 1px solid var(--slds-border-1);
   font-size: 11px; color: var(--slds-text-weakest); background: var(--slds-surface-2);
 }
-.p-card--table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 880px; table-layout: fixed; }
+.p-card--table { overflow: hidden; min-width: 0; }
 
 .p-grid { display: grid; gap: 20px; align-items: start; }
 .p-grid--2 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
@@ -302,7 +302,7 @@ small { font-size: 11px; }
 
 /* ---------------------------------------------------------------- Tables */
 .p-tablewrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 880px; table-layout: fixed; }
 th { height: 40px; background: #f7f9fc; color: var(--slds-text-weak); font-size: 12px; font-weight: 600; text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--slds-border-1); white-space: nowrap; }
 th.p-num { text-align: right; }
 td { height: 56px; padding: 10px 16px; border-bottom: 1px solid var(--slds-neutral-90); vertical-align: middle; }

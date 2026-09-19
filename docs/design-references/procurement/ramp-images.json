@@ -1,0 +1,117 @@
+{
+  "url": "https://ramp.com/reporting",
+  "imgs": [
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Freporting-hero.webp&w=1080&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Reporting hero",
+      "rect": {
+        "x": 744,
+        "y": 86,
+        "width": 1031,
+        "height": 708
+      },
+      "natural": [
+        1080,
+        742
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Freporting-ask.webp&w=2048&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Ask reporting questions in Ramp",
+      "rect": {
+        "x": 64,
+        "y": 1799.71875,
+        "width": 755.328125,
+        "height": 424.484375
+      },
+      "natural": [
+        2000,
+        1124
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Freporting-approvals.webp&w=2048&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Share a report in Ramp",
+      "rect": {
+        "x": 620.65625,
+        "y": 2352.203125,
+        "width": 755.34375,
+        "height": 424.5
+      },
+      "natural": [
+        2000,
+        1124
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Fbudgets_01.webp&w=1920&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Track budgets vs. actuals in real time",
+      "rect": {
+        "x": 64,
+        "y": 3123.703125,
+        "width": 421.328125,
+        "height": 316.328125
+      },
+      "natural": [
+        1264,
+        949
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Fbudgets_02.webp&w=1920&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Stop approving spend you'll regret",
+      "rect": {
+        "x": 509.328125,
+        "y": 3123.703125,
+        "width": 421.328125,
+        "height": 316.328125
+      },
+      "natural": [
+        1264,
+        949
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Fbudgets_03.webp&w=1920&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "No more back-and-forth with budget owners",
+      "rect": {
+        "x": 954.65625,
+        "y": 3123.703125,
+        "width": 421.34375,
+        "height": 316.328125
+      },
+      "natural": [
+        1264,
+        949
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Freporting-ramp-for-excel.webp&w=3840&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Ramp for excel",
+      "rect": {
+        "x": 64,
+        "y": 4747.359375,
+        "width": 644,
+        "height": 362.25
+      },
+      "natural": [
+        2736,
+        1539
+      ]
+    },
+    {
+      "src": "https://ramp.com/_next/image?url=%2Fassets%2Fimages%2Freporting%2Freporting-data-warehouse.webp&w=3840&q=75&dpl=dpl_3dTAA9i5wciq2cZaAdE2ha8wZjSP",
+      "alt": "Data warehouse",
+      "rect": {
+        "x": 732,
+        "y": 4747.359375,
+        "width": 644,
+        "height": 362.25
+      },
+      "natural": [
+        2736,
+        1539
+      ]
+    }
+  ]
+}
