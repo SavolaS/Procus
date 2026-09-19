@@ -41,6 +41,47 @@ export function createBackendState() {
   return { config: null, runs: [], outbox: [], sources: [], productId: 'TM-105', specification: '', quantity: '', query: '', selectedDraft: null, busy: false, loading: true, error: '', notice: '', authenticated: false, contactConfirmed: false };
 }
 
+// Part requirements belong to the selected part; switching parts must not carry
+// a previous drawing or annual volume into a new supplier search.
+export function selectBackendPart(state, productId) {
+  if (state.productId === productId) return;
+  state.productId = productId;
+  state.specification = '';
+  state.quantity = '';
+}
+
+function focusKey(element) {
+  if (!element) return null;
+  if (element.dataset.backendField) return `field:${element.dataset.backendField}`;
+  if (element.dataset.backendAction) return JSON.stringify(['action', element.dataset.backendAction, element.dataset.run, element.dataset.candidate, element.dataset.draft]);
+  const detail = element.closest('[data-backend-detail]')?.dataset.backendDetail;
+  if (element.localName === 'summary' && detail) return `summary:${detail}`;
+  if (element.localName === 'a') return JSON.stringify(['link', detail, element.getAttribute('href')]);
+  const form = element.closest('[data-backend-form]')?.dataset.backendForm;
+  if (form) return JSON.stringify(['form', form, element.localName, element.name, element.type]);
+  return element.id ? `id:${element.id}` : null;
+}
+
+export function captureBackendFocus(element) {
+  const key = focusKey(element);
+  return key ? { key, start: element.selectionStart, end: element.selectionEnd,
+    direction: element.selectionDirection, scrollTop: element.scrollTop } : null;
+}
+
+export function restoreBackendFocus(container, snapshot) {
+  if (!snapshot || !container) return false;
+  const replacement = [...container.querySelectorAll('button, input, select, textarea, summary, a[href], [tabindex]')]
+    .find(element => focusKey(element) === snapshot.key && !element.disabled);
+  if (!replacement) return false;
+  replacement.focus({ preventScroll: true });
+  if (Number.isInteger(snapshot.start) && Number.isInteger(snapshot.end)
+    && (replacement.localName === 'textarea' || ['text', 'search', 'tel', 'url', 'password'].includes(replacement.type))) {
+    replacement.setSelectionRange(snapshot.start, snapshot.end, snapshot.direction);
+    replacement.scrollTop = snapshot.scrollTop;
+  }
+  return true;
+}
+
 export function emailStatus(status) {
   return ({ draft: 'Draft · not sent', simulated: 'Simulated · no email sent', accepted: 'Accepted by email provider · delivery unconfirmed', sent: 'Submitted · delivery unconfirmed', sending: 'Submitting to provider', unknown: 'Submission uncertain · check provider before retrying', failed: 'Submission failed', rejected: 'Submission rejected' })[status] || status || 'Status unknown';
 }
@@ -77,7 +118,7 @@ function draftPreview(state) {
   const draft = state.outbox.find(item => item.id === state.selectedDraft);
   if (!draft) return '';
   const simulated = state.config?.mode !== 'live' || state.config?.email === 'simulated';
-  return `<section class="p-backend-preview" aria-labelledby="p-backend-preview-title" tabindex="-1">
+  return `<section class="p-backend-preview" id="p-backend-preview" aria-labelledby="p-backend-preview-title" tabindex="-1">
     <div class="p-backend-line"><h3 id="p-backend-preview-title">Review supplier RFQ</h3><button type="button" class="p-button p-button--quiet" data-backend-action="close-preview">Close preview</button></div>
     <p><strong>To:</strong> ${esc(draft.to)}</p><p><strong>Subject:</strong> ${esc(draft.subject)}</p>
     <pre>${esc(draft.body)}</pre><p>${badge(emailStatus(draft.status))}</p>${draft.error ? `<p class="p-backend-error">${esc(text(draft.error))}</p>` : ''}
@@ -127,20 +168,16 @@ export function attachBackendWorkspace({ root, ui, onIndicesUpdated = () => {}, 
   let requestSequence = 0;
   let pendingSubmission = null;
   let pollingPaused = false;
+  let deferredFocus = null;
   const paint = () => {
     const node = root.querySelector('#p-backend-workspace');
     if (!node) return;
     const focused = node.contains(document.activeElement) ? document.activeElement : null;
-    const field = focused?.dataset.backendField;
-    const selection = field && focused.selectionStart;
+    const focus = focused ? captureBackendFocus(focused) : document.activeElement === document.body ? deferredFocus : null;
     const expanded = new Map([...node.querySelectorAll('[data-backend-detail]')].map(detail => [detail.dataset.backendDetail, detail.open]));
     node.outerHTML = backendWorkspace(state);
     root.querySelectorAll('#p-backend-workspace [data-backend-detail]').forEach(detail => { if (expanded.has(detail.dataset.backendDetail)) detail.open = expanded.get(detail.dataset.backendDetail); });
-    if (field) {
-      const replacement = root.querySelector(`[data-backend-field="${field}"]`);
-      replacement?.focus({ preventScroll: true });
-      if (selection != null && ['textarea', 'input'].includes(replacement?.localName) && replacement.type !== 'number') replacement.setSelectionRange(selection, selection);
-    }
+    deferredFocus = restoreBackendFocus(root.querySelector('#p-backend-workspace'), focus) ? null : focus;
   };
   const request = async (path, body) => {
     try { return await backendRequest(path, { body, token, fetchImpl }); }
@@ -192,11 +229,15 @@ export function attachBackendWorkspace({ root, ui, onIndicesUpdated = () => {}, 
   };
   root.addEventListener('input', event => {
     const field = event.target.dataset.backendField;
-    if (field && field !== 'contactConfirmed') state[field] = event.target.value;
+    if (field === 'productId') selectBackendPart(state, event.target.value);
+    else if (field && field !== 'contactConfirmed') state[field] = event.target.value;
   });
   root.addEventListener('change', event => {
     const field = event.target.dataset.backendField;
-    if (field && field !== 'contactConfirmed') state[field] = event.target.value;
+    if (field === 'productId') {
+      selectBackendPart(state, event.target.value);
+      paint();
+    } else if (field && field !== 'contactConfirmed') state[field] = event.target.value;
     if (field === 'contactConfirmed') {
       state.contactConfirmed = event.target.checked;
       const button = root.querySelector('[data-backend-action="send"]');

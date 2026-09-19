@@ -237,12 +237,14 @@ root.addEventListener('click', async event => {
     return;
   }
   if (event.target.closest('[data-copy-draft]')) {
+    const flow = ui.negotiation;
     try {
-      const flow = ui.negotiation;
       const sourcing = flow.step === 'rfq-draft';
       await navigator.clipboard.writeText(`Subject: ${sourcing ? flow.rfqSubject : flow.subject}\n\n${sourcing ? flow.rfqDraft : flow.draft}`);
+      if (ui.negotiation !== flow) return;
       $('#p-draft-feedback').textContent = 'Draft copied. Nothing has been sent.';
     } catch {
+      if (ui.negotiation !== flow) return;
       $('#p-message-body').focus();
       $('#p-message-body').select();
       $('#p-draft-feedback').textContent = 'Select and copy the message with your keyboard.';

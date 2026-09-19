@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { backendWorkspace, backendRequest, createBackendState, emailStatus } from '../src/backend-workspace.js';
+import { backendWorkspace, backendRequest, createBackendState, emailStatus, selectBackendPart, captureBackendFocus, restoreBackendFocus } from '../src/backend-workspace.js';
 
 const example = () => ({ ...createBackendState(), loading: false, config: { mode: 'demo', discovery: 'demo', email: 'simulated', indexMode: 'snapshot' }, runs: [{ id: 'run-1', productId: 'TM-105', mode: 'demo', status: 'completed', candidates: [{ id: 'candidate-1', name: 'Example supplier', email: 'rfq@example.invalid', capability: 'Castings', website: 'javascript:alert(1)', sources: [{ title: '<script>bad</script>', url: 'https://example.invalid/sources' }] }] }] });
 
@@ -69,4 +69,47 @@ test('timed-out backend requests release the UI and require checking saved state
 test('backend authentication failures preserve their status for reconnect UI', async () => {
   const fetchImpl = async () => ({ ok: false, status: 401, json: async () => ({ error: 'Invalid token' }) });
   await assert.rejects(backendRequest('workspace', { fetchImpl }), error => error.status === 401 && error.message === 'Invalid token');
+});
+
+test('switching parts clears drawing and volume, while repeated selection preserves current edits', () => {
+  const state = { ...example(), specification: 'Drawing TM-105 revision C', quantity: '26000' };
+  selectBackendPart(state, 'TM-105');
+  assert.equal(state.specification, 'Drawing TM-105 revision C');
+  assert.equal(state.quantity, '26000');
+  selectBackendPart(state, 'NF-101');
+  assert.equal(state.productId, 'NF-101');
+  assert.equal(state.specification, '');
+  assert.equal(state.quantity, '');
+  assert.equal(state.runs.length, 1, 'Existing research remains available');
+});
+
+function control({ dataset = {}, localName = 'button', detail, ...properties } = {}) {
+  return { dataset, localName, ...properties,
+    closest: selector => selector === '[data-backend-detail]' && detail ? { dataset: { backendDetail: detail } } : null,
+    focus() { this.focused = true; },
+    setSelectionRange(...selection) { this.restoredSelection = selection; },
+  };
+}
+
+test('poll repaint restores the same action and disclosure even if result order changes', () => {
+  const current = control({ dataset: { backendAction: 'preview', draft: 'draft-two' } });
+  const other = control({ dataset: { backendAction: 'preview', draft: 'draft-one' } });
+  const replacement = control({ dataset: { ...current.dataset } });
+  const container = { querySelectorAll: () => [other, replacement] };
+  assert.equal(restoreBackendFocus(container, captureBackendFocus(current)), true);
+  assert.equal(replacement.focused, true);
+  assert.equal(other.focused, undefined);
+
+  const summary = control({ localName: 'summary', detail: 'index-steel' });
+  const replacementSummary = control({ localName: 'summary', detail: 'index-steel' });
+  assert.equal(restoreBackendFocus({ querySelectorAll: () => [control({ localName: 'summary', detail: 'index-copper' }), replacementSummary] }, captureBackendFocus(summary)), true);
+  assert.equal(replacementSummary.focused, true);
+});
+
+test('poll repaint preserves a selected specification range, its direction and scroll', () => {
+  const current = control({ localName: 'textarea', dataset: { backendField: 'specification' }, selectionStart: 12, selectionEnd: 35, selectionDirection: 'backward', scrollTop: 100 });
+  const replacement = control({ localName: 'textarea', dataset: { backendField: 'specification' } });
+  restoreBackendFocus({ querySelectorAll: () => [replacement] }, captureBackendFocus(current));
+  assert.deepEqual(replacement.restoredSelection, [12, 35, 'backward']);
+  assert.equal(replacement.scrollTop, 100);
 });
