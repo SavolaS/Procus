@@ -18,7 +18,17 @@ Preserve the product intent and the meaning of the data: evidence-backed procure
 
 ## Current prototype
 
-Interactive procurement workspace prototype. Three connected views split the workflow: **Products & suppliers** for inventory and flags, **Workflow** for case status, and **Spend** for the effect of agreed price changes. All views share the same fictional data: three manufacturers and nine products.
+Interactive procurement workspace prototype. Five connected views:
+
+- **Overview** — where spend stands, what is flagged, and what is waiting on a decision.
+- **Parts & suppliers** — every part grouped by supplier, with a twelve-month price trend and a severity-ranked signal on each row.
+- **Workflow** — each case from first signal to an agreed price, with owners, age and stalled counts per stage.
+- **Agents** — what the agents have done, what they are doing now, their supplier conversations, and the decisions they are blocked on.
+- **Spend** — annual spend, its trend, and the opportunity still open.
+
+All views share the same fictional data: 49 parts across 8 European suppliers, about €25.7M of annual spend. The figures are generated from a fixed seed, so every reload, test run and screenshot shows the same numbers.
+
+The interface follows the Salesforce Lightning Design System. [DESIGN.md](DESIGN.md) records the token set and component rules extracted from Salesforce's published packages, and `src/styles.css` implements it using the same token names so the two can be checked against each other.
 
 ## Run
 
@@ -36,27 +46,38 @@ npm test
 
 ## Available interactions
 
-- Expand or collapse manufacturers and inspect each product.
-- Search by name, product code or manufacturer.
-- Filter flagged products and case statuses.
-- Change status in the product detail panel.
-- Mark a case **Agreed** to include its example target price in projected spend; reopen it to remove that impact.
-- Open an internal negotiation outline.
-- Switch between all three views; a status change is reflected in the board and spend totals.
-- Statuses, active view, selection and filters persist in this browser using localStorage.
+- Filter parts by alert severity, case status, or a search across names, codes, suppliers and categories.
+- Collapse or expand a supplier group. Groups always start expanded; collapse is not carried across reloads.
+- Open any part for its price history, the evidence behind its signal, its annual impact and its next step.
+- Change a case stage from the detail panel; the board and every spend total follow.
+- Draft a supplier message from the evidence, or open the conversation an agent has already started.
+- Approve, take over or defer the decisions an agent is blocked on; pause and resume individual agents.
+- Move between views from the alerts, the pipeline and the agent activity feed.
+- Stage changes, the active view, selection, filters, handled decisions and paused agents persist in this browser using localStorage.
 
-All suppliers, prices, flags and volumes are fictional demo data. Potential savings include agreed savings; the two must not be added together. Spend after changes assumes the entire example volume moves to the target price, without additional costs. These are scenarios, not realized savings. Summary figures always cover all products, while manufacturer subtotals reflect visible filtered rows.
+## What the numbers mean
 
-This version has no backend, authentication, live supplier data, integrations or external messaging. Browser state is local to the current browser and origin.
+All suppliers, prices, signals and volumes are fictional. Three savings figures are deliberately kept apart and must never be added together:
+
+- **Identified** — what the evidence suggests is available. Assumes the whole example volume moves to the reference price, with no freight, tooling or qualification cost.
+- **Agreed** — what a supplier has confirmed, expressed as an annual run rate. A subset of identified.
+- **Realised** — only the months already invoiced at the agreed price. A subset of agreed. Marking a case Agreed in the workspace realises nothing until purchases are recorded.
+
+Cases marked **No action** are excluded from opportunity totals. Summary figures always cover all parts, while supplier subtotals reflect the visible filtered rows. Reference prices are benchmarks used to open a discussion, not internal negotiation limits.
+
+This version has no backend, authentication, live supplier data, integrations or external messaging. Nothing is sent to a supplier. Browser state is local to the current browser and origin.
 
 ## Structure
 
-- `index.html`: application shell.
-- `src/styles.css`: responsive light and dark appearance.
-- `src/app.js`: interactions and rendering.
-- `src/data.js`: fictional products and status options.
-- `src/model.js`: spend calculations and validated browser persistence.
-- `server.mjs`: dependency-free local server; only application assets are served.
-- `tests/model.test.js`: spend and persistence checks.
+- `index.html`: application shell — global header and view navigation.
+- `DESIGN.md`: the Salesforce Lightning token set and component rules this UI implements.
+- `src/styles.css`: the design tokens and every component rule.
+- `src/data.js`: fictional parts, suppliers, agents and supplier conversations.
+- `src/model.js`: spend, severity, pipeline and savings calculations, and validated browser persistence.
+- `src/chart.js`: the SVG sparklines, price chart, spend chart and proportion bars.
+- `src/views.js`: the markup for each view and the detail panel.
+- `src/app.js`: state, events and rendering.
+- `server.mjs`: dependency-free local server; serves only the shell and `src` sources, under a strict Content-Security-Policy.
+- `tests/model.test.js`: data, calculation and persistence checks.
 
 The concept documents remain separate from the implementation.
