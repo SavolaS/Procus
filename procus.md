@@ -1,7 +1,9 @@
 # Procus — tuoteidea ja suunnittelun lähtökohdat
 
 Päivitetty: 19.9.2026  
-Tila: konsepti ennen tuotesuunnittelua ja toteutusta.
+Tila: historiallinen lähtökonsepti. Tuotesuunnittelu ja karkea käyttöliittymäprototyyppi ovat sittemmin edenneet.
+
+**Nykytilan huomautus 19.9.2026:** perustajan mukaan nykyisen koodipohjan UI ja UX ovat heikkoja. Design ei ole lukittu: kehittäjät ja agentit saavat uudistaa käyttöliittymän, navigaation ja frontend-rakenteen. Tämä alkuperäinen ideamuistio ei määrää toteutuksen designia. Ajantasaiset ehdotukset ovat [tuotesuunnitelmassa](procus-tuotesuunnitelma.md) ja [kilpailijatutkimuksessa](procus-kilpailijatutkimus.md). Alla oleva alkuperäinen ideateksti säilyy taustana.
 
 Tämä muistiinpano jäsentää perustajan kuvaaman idean. Markkinaa, datan saatavuutta tai säästöpotentiaalia ei ole vielä validoitu. Ehdotukset ensimmäisen version rajauksesta ovat keskustelun pohjaksi, eivät päätettyjä vaatimuksia.
 

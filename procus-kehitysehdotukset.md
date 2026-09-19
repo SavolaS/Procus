@@ -4,7 +4,13 @@ Päivitetty: 19.9.2026
 
 Uusimmat perustajan linjaukset dashboardista, toimittaja- ja tuotenäkymistä sekä sopimusten tuonnista on koottu [tuotesuunnitelmaan](procus-tuotesuunnitelma.md). Tämä muistio säilyttää aiempien ehdotusten ja arvioiden historian.
 
-Tämä on vaihtoehtojen arviointimuistio, ei uusi hyväksytty tuotesuunnitelma. Alkuperäinen [procus.md](procus.md) säilytetään muuttamattomana. Alla olevat ehdotukset odottavat perustajan kommentteja.
+Tämä on vaihtoehtojen arviointimuistio, ei uusi hyväksytty tuotesuunnitelma. Alkuperäisen [procus.md](procus.md) ideateksti säilyy historiallisena lähtökohtana; sen alkuun on lisätty nykytilan huomautus. Alla olevat ehdotukset odottavat perustajan kommentteja.
+
+## Design ei ole lukittu
+
+**Perustajan tarkennus 19.9.2026: nykyisen koodipohjan UI ja UX ovat heikkoja, eivät hyväksytty tavoitetila.** Kehittäjät ja agentit saavat uudistaa käyttöliittymän ja sen rakenteen kokonaan. Tämän muistion kortit, dashboardit, välilehdet ja demopolut ovat vaihtoehtoja, eivät säilytettäviä designvaatimuksia. Uusin ohje ohittaa vanhat käyttöliittymän lukitseviksi tulkittavat muotoilut. Tuotetavoitteet ja laskennan oikeellisuus erotetaan designista.
+
+Osion 10 kilpailijatutkimus on uusi lähteisiin perustuva lisäys. Se ei muuta alla olevia vanhoja judge-arvioita jälkikäteen markkinatutkimukseksi.
 
 ## Arviointitapa
 
@@ -243,3 +249,35 @@ Ehdotettu demo, kaikki luvut ja tilanteet selvästi esimerkkiaineistoa:
 Microsoft Dynamics 365:n dokumentaatio kuvaa RFQ:n lähettämisen useille toimittajille, vastausten kirjaamisen ja vertailun sekä yrityksen hyväksyttyihin hankintakategorioihin liittyvien toimittajien lisäämisen. Tämä tukee kuvausta olemassa olevista RFQ-perustoiminnoista. [Microsoft: Requests for quotation overview](https://learn.microsoft.com/en-us/dynamics365/supply-chain/procurement/request-quotations).
 
 Procusin ennakointiin, pienten sopimusten työmäärään ja neuvotteluvalmiuteen liittyvä painotus on tämän muistion oma tuotehypoteesi. Yhden järjestelmän dokumentaatio ei osoita ominaisuuksien puuttuvan muilta tuotteilta eikä validoi kilpailuetua tai asiakkaiden maksuhalukkuutta.
+
+
+## 10. Kilpailijatutkimuksen synteesi ja uudet kehitysehdotukset
+
+Lisätty 19.9.2026. Kolme tutkimusagenttia kävi rinnakkain läpi kilpailutuksen ja neuvottelun, kustannustiedon ja suorien hankintojen sekä pyyntöjen ja työnkulkujen tuotteita. Tämä on lähteistetty lisätutkimus, ei aiempien judge-arvioiden vahvistus tai asiakasvalidointi. Kokonaisuus lähteineen on [kilpailijatutkimuksessa](procus-kilpailijatutkimus.md).
+
+### Keskeinen korjaus erottumiseen
+
+AI:n tuottama RFQ, neuvottelusuunnitelma, pienten sopimusten käsittely, nykytoimittajat, indeksiseuranta ja säästödashboard ovat kilpailtua tarjontaa. Esimerkiksi [Pactum Price List Agent](https://pactum.com/price-list-agents) kuvaa alkuperäistä ideaa lähellä olevaa hinnastoneuvottelua; [Levelpath Sourcing](https://www.levelpath.com/capabilities/sourcing) kuvaa hintahistoriaan ja ehtoihin perustuvaa neuvotteluvalmistelua. Näitä ominaisuuksia kannattaa hyödyntää, mutta niitä ei voi sellaisinaan esittää todistettuna kilpailuetuna.
+
+Ehdotus fokukseksi on **pienen teollisen hankintatiimin nykytoimittajan hinnanmuutos, joka viedään tarkistetusta aineistosta päätökseen ja ostojen toteumaan vähällä kokonaisvalmistelulla**. Kategoria ja asiakaskoko ovat hypoteeseja. Myös ostajan nykyinen Excel- ja ERP-työtapa pitää voittaa käytännössä.
+
+### Kuusi konkreettista parannusehdotusta
+
+| Ehdotus | Mitä nykyiseen ideaan tarkentuu? | Miten hyödyn voisi testata? |
+| --- | --- | --- |
+| Hinnastomuutos aloitustapahtumaksi | Valitaan yksi toistuva syy avata tuote: mikä hinta muuttui, milloin ja mitä sen vuoksi tehdään? | Ostaja käsittelee oikean muutoksen ja arvioi, mikä valmistelutyö poistui. |
+| Vertailun puutteet näkyviin ennen hintajärjestystä | Nimike, revisio, yksikkö, määräporras ja toimituskelpoisuus tarkistetaan ennen säästöväitettä. | Mukaan tarkoituksella eri pakkauskoko, vanhentuva tarjous ja hyväksymätön vaihtoehto. |
+| Game planille peruste ja vastaväite | Jokainen argumentti kertoo lähteen ja rajan: esimerkiksi indeksi ei kata koko kustannusrakennetta. | Ostaja tarkistaa suunnitelman ajan ja korjausten määrän suhteessa nykytyötapaan. |
+| Vain puuttuvien tarjouskenttien kysyminen | Esitäytetään tunnettu tieto ja valmistellaan täsmennyspyyntö vertailua estävistä puutteista. | Vähemmän edestakaisia täsmennyksiä ja enemmän ajoissa vertailukelpoisia tarjouksia. |
+| Valittu toimenpide ja vaihtoehdot erikseen | Nykytoimittajan alennus, ostojen siirto ja uuden vaihtoehdon hyväksyttäminen ovat skenaarioita, eivät summattavia säästöjä. | Ostaja tunnistaa toteuttamiskelpoisen vaihtoehdon ja sen kustannukset. |
+| Sovitun hinnan toteuman poikkeama | Jos muutos ei näy ostoriveillä, syntyy selvitystehtävä. Tulosseuranta auttaa seuraavassa työtehtävässä. | Talous tai ostaja täsmäyttää sovitun muutoksen ensimmäisiin ostoihin. |
+
+Nämä ovat kilpailijoista opittuja ja Procusin tilanteeseen sovitettuja ehdotuksia; yksittäisten toimintojen ainutlaatuisuutta ei väitetä. Ehdotettu ensimmäinen demo ja hyväksymiskriteerit ovat [tuotesuunnitelman osiossa 12](procus-tuotesuunnitelma.md#12-kilpailijatutkimuksen-pohjalta-ehdotettu-seuraava-versio).
+
+### Priorisointi ja päätöksenteon ehdot
+
+Ensimmäiseksi kokeillaan hinnaston muutosta, vertailukelpoisuuden tarkistusta ja kahta valmistelupolkua. Sen jälkeen ajoitus, toimittajapaketti, vastausten käsittely ja ostodataan kytketty toteuma. Laaja kustannussimulaatio, yleinen hankintapyyntöalusta ja autonominen neuvottelu eivät ole tämän kokeen edellytyksiä.
+
+Ehdotettu kokeen koko on 3–5 ostajaa ja noin 10–20 tapausta yhdessä kategoriassa. Tavoitteeksi voidaan sopia vähintään 50 % pienempi aktiivinen valmisteluaika ilman kriittisten virheiden kasvua. Tämä on ehdotus, ei havaittu tulos. Kokonaisarvioon otetaan käyttöönotto, datan korjaaminen, tuki ja mahdolliset datalisenssit. Jos aineisto ei riitä, ostaja ei voi toimia tai asiakas ei halua maksullista jatkoa, rajaus vaihdetaan ennen laajempaa toteutusta.
+
+**Designia koskeva päätös on erillinen ja selvä:** nykyisen koodipohjan UI ja UX ovat heikkoja. Käyttöliittymän saa uudistaa perusteellisesti. Tutkimuksen työnkulkuideoita ei saa tulkita vaatimukseksi säilyttää prototyypin näkymät tai kumota toisen agentin perusteltua designuudistusta.

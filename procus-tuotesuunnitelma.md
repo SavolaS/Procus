@@ -1,9 +1,19 @@
 # Procus — sovelluksen rakenne ja hankintojen työnkulku
 
 Päivitetty: 19.9.2026  
-Tila: yhteinen suunnitteluluonnos rakentajalle. Osio 1 kokoaa perustajan vahvistamat linjaukset. Osio 9 erottaa demon vahvistetut vaatimukset niiden toteutusehdotuksista. Osio 10 kuvaa uusimman kilpailutusta ja automaattista analyysiä koskevan tarkennuksen sekä ehdotuksen sen työnkuluksi. Muu toteutuksen yksityiskohtainen suunnittelu on ehdotusta.
+Tila: yhteinen suunnitteluluonnos rakentajalle. Osio 1 kokoaa perustajan vahvistamat linjaukset. Osio 9 erottaa demon vahvistetut vaatimukset niiden toteutusehdotuksista. Osio 10 kuvaa kilpailutusta ja automaattista analyysiä koskevan tarkennuksen. Uusin designvapautta koskeva ohje on heti tämän johdannon alla; osio 12 lisää kilpailijatutkimukseen perustuvan kokeiluehdotuksen. Muu toteutuksen yksityiskohtainen suunnittelu on ehdotusta.
 
 Tausta: [alkuperäinen konsepti](procus.md) ja [aiemmat kehitysehdotukset](procus-kehitysehdotukset.md). Tämä dokumentti kokoaa uusimman suunnan; vanhat muistiot säilyttävät idean kehityshistorian.
+
+## Nykyinen suunnittelutilanne — lue ennen toteutusta
+
+**Perustajan uusin tarkennus 19.9.2026: nykyinen koodipohja on UI:n ja UX:n osalta heikko. Se on karkea prototyyppi, eikä sen käyttöliittymä tai käyttökokemus ole tavoitetaso. Design ei ole lukittu.**
+
+Toinen kehittäjä tai agentti saa suunnitella uudelleen navigaation, informaatioarkkitehtuurin, näkymät, visuaalisen ilmeen, komponentit, vuorovaikutuksen ja käyttöliittymän koodirakenteen. Nykyisiä välilehtiä, dashboardia, kortteja, kuvakaappauksia tai HTML-luonnosta ei tarvitse säilyttää. Tämän dokumentin aiemmat merkinnät tietyn dashboardin tai välilehtijaon vahvistamisesta eivät enää lukitse designia; tämä uudempi perustajan ohje ohittaa ne.
+
+Tuotteen tavoite säilyy: pienempien hankintojen seuranta ja valmistelu, käyttökelpoiset tarjoukset, perusteltu neuvottelusuunnitelma ja tuloksen todentaminen. Hintojen vertailukelpoisuus, lähteet, puuttuvien tietojen näkyminen sekä mahdollisen, sovitun ja toteutuneen hyödyn erottelu koskevat tietojen merkitystä, eivät ruudun rakennetta. Sisäinen LAA ei kuulu toimittajalle näkyvään aineistoon.
+
+**Lukujärjestys:** uusin perustajan ohje → tuotteen vahvistettu tavoite → tämänhetkiset toteutusehdotukset → vanhat luonnokset → nykyinen prototyyppi. Kilpailijatutkimuksen ehdotukset eivät itsessään ole hyväksyttyjä vaatimuksia. Uusi [kilpailijatutkimus](procus-kilpailijatutkimus.md) ja tämän dokumentin osio 12 täydentävät suunnittelua.
 
 ## 1. Perustajan vahvistama suunta
 
@@ -13,10 +23,10 @@ Tausta: [alkuperäinen konsepti](procus.md) ja [aiemmat kehitysehdotukset](procu
 - Toimittaja-analyysi tukee neuvotteluaseman arviointia. Yksi tarkasteltava tekijä on ostajan ostojen osuus toimittajan liikevaihdosta.
 - Nykyisestä toimittajakannasta pyydettävät tarjoukset ovat keskeinen lähtökohta. Toimittajan kuuluminen yrityksen toimittajakantaan ja hyväksyntä tietylle osalle erotetaan toisistaan.
 - Seuranta tähtää ennakointiin: tarjous voidaan hankkia jo nyt sopimukseen, jonka uudelleenneuvottelu on esimerkiksi kolmen kuukauden päästä. Tavoitteena on saada vertailu ja vaihtoehto valmiiksi ennen päätöshetkeä.
-- Sovellus avautuu dashboardiin, joka näyttää hankintojen kokonaiskuvan.
+- Aiempi designlinjaus oli avautuminen dashboardiin. Uusin tarkennus avaa aloitusnäkymän uudelleen suunniteltavaksi; hankintojen kokonaiskuvan ymmärtäminen säilyy tavoitteena.
 - Tuotteen painotus on tuloksissa ja hankintojen johtamisessa. Yksittäiset tuotteet ovat yksi tapa tarkastella kokonaisuutta.
-- Erillisestä toimittajavälilehdestä voi tarkastella hankintoja toimittajittain.
-- Erillisestä tuote-/osavälilehdestä voi tarkastella saman tuotteen eri toimittajia ja näiden osuuksia.
+- Hankintoja pitää voida tarkastella toimittajittain. Erillinen välilehti oli aiempi toteutusajatus, jonka saa korvata.
+- Saman tuotteen eri toimittajia ja osuuksia pitää voida vertailla. Erillinen tuote-/osavälilehti ei ole enää lukittu ratkaisu.
 - Sovellukseen tulee sähköpostiyhteys, jonka kautta päivittyneet sopimukset päivittyvät tietokantaan.
 - Uusia sopimuksia voi tuoda PDF-tiedostoina, ja niiden sisältö muunnetaan standardimuotoon.
 - Demossa voi luoda valmiin RFQ:n tai game planin kahteen tilanteeseen: uuden toimittajan kanssa neuvottelemiseen ja nykyisen toimittajan hinnan parantamiseen.
@@ -30,9 +40,9 @@ RFQ:n ja game planin luominen näihin kahteen tilanteeseen kuuluu vahvistettuun 
 
 Sama analyysi palvelee kahta käyttötapaa: ostaja tutkii itse valitsemaansa osaa tai sopimusta, tai automaattinen seuranta nostaa sen käsiteltäväksi. Molemmissa päädytään perusteltuun arvioon kilpailuttamisen tai nykytoimittajan kanssa neuvottelemisen järkevyydestä ja tarvittaessa valmiiseen RFQ:hun tai game planiin.
 
-Käyttäjä aloittaa dashboardista kysymyksillä: miten hankinnat kehittyvät, missä on saavutettu tuloksia ja mihin pitäisi tarttua seuraavaksi? Hän voi myös hakea suoraan tietyn osan. Osan analyysi yhdistää kilpailutushistorian, hintakehityksen, kustannustekijät, toimittajavaihtoehdot ja neuvotteluaseman.
+Aiemmassa käyttöpolkuehdotuksessa käyttäjä aloittaa dashboardista kysymyksillä: miten hankinnat kehittyvät, missä on saavutettu tuloksia ja mihin pitäisi tarttua seuraavaksi? Hän voi myös hakea suoraan tietyn osan. Osan analyysi yhdistää kilpailutushistorian, hintakehityksen, kustannustekijät, toimittajavaihtoehdot ja neuvotteluaseman.
 
-Sopimusten päivittyminen on osa tuotteen perustaa: analyysin pitää käyttää oikeaa hintaa, ehtoa ja voimassaoloaikaa. RFQ ja game plan ovat konkreettisia tuotoksia, joilla käyttäjä vie havainnon neuvotteluun. Aiempi ehdotus toimittajapaketin nostamisesta sovelluksen keskipisteeksi väistyy dashboardista alkavan käyttötavan tieltä.
+Sopimusten päivittyminen on osa tuotteen perustaa: analyysin pitää käyttää oikeaa hintaa, ehtoa ja voimassaoloaikaa. RFQ ja game plan ovat konkreettisia tuotoksia, joilla käyttäjä vie havainnon neuvotteluun. Aiemmassa suunnitteluvaiheessa dashboardista alkava käyttötapa korvasi toimittajapaketin ensisijaisena aloituspisteenä. Uusimman tarkennuksen jälkeen kumpikaan ei sido uudelleensuunnittelua.
 
 ## 3. Ehdotus sovelluksen navigaatioksi
 
@@ -43,7 +53,7 @@ Sopimusten päivittyminen on osa tuotteen perustaa: analyysin pitää käyttää
 | Tuotteet / osat | Tarkista osan kilpailutustilanne ja toiminnan kannattavuus | Status, hintahistoria, BOM- ja indeksivertailu, toimittajat, ostojen osuudet ja kilpailutussuositus |
 | Sopimukset | Tuo, tarkista ja löydä voimassa olevat ehdot | PDF-tuonti, standardoidut tiedot, alkuperäiset dokumentit ja versiot |
 
-Kolme ensimmäistä näkymää perustuvat perustajan linjaukseen. Erillinen Sopimukset-välilehti on ehdotus; sopimusten hallinta voisi myös sijaita toimittajan alla. Sähköpostiyhteyden asetukset kuuluisivat asetuksiin ja sen tuottamat olennaiset muutokset varsinaisiin työnäkymiin.
+Kolme ensimmäistä näkymää perustuivat aiempaan perustajan designlinjaukseen. Uusin designvapautta koskeva tarkennus sallii niiden korvaamisen toisella rakenteella. Erillinen Sopimukset-välilehti on ehdotus; sopimusten hallinta voisi myös sijaita toimittajan alla. Sähköpostiyhteyden asetukset kuuluisivat asetuksiin ja sen tuottamat olennaiset muutokset varsinaisiin työnäkymiin.
 
 ### Dashboard: tulokset ja seuraavat päätökset
 
@@ -331,3 +341,45 @@ Perustajan whiteboard yhdistää ostajan työtilan, tarjoukset nykyisestä toimi
 Kolmen kuukauden päähän valmistautuminen on esimerkki ennakoinnin tarpeesta, ei kaikille sopimuksille asetettu kiinteä seurantaraja. Seurannan tavoitetta kuvataan lähes reaaliaikaiseksi suhteessa kvartaalittaiseen tarkasteluun; todellinen päivitysrytmi riippuu datalähteistä eikä reaaliaikaista saatavuutta ole vahvistettu.
 
 Tämän pohjalta laaditut uudet tuote-ehdotukset, priorisointi ja esimerkkidemo ovat [kehitysehdotusten osiossa 9](procus-kehitysehdotukset.md#9-whiteboardin-pohjalta-ehdotetut-parannukset). Ne eivät vielä muuta demon vahvistettua laajuutta.
+
+
+## 12. Kilpailijatutkimuksen pohjalta ehdotettu seuraava versio
+
+Lisätty 19.9.2026. Tämä osio on ehdotus rajatuksi kokeeksi. Se ei lukitse designia, muuta muita ehdotuksia vaatimuksiksi tai väitä ominaisuuksia toteutetuiksi. Tausta, kilpailijakohtaiset lähteet ja pilotin mittarit ovat [kilpailijatutkimuksessa](procus-kilpailijatutkimus.md).
+
+### Mikä muuttui käsityksessä markkinasta?
+
+Kilpailutuksen automaatio, indeksiperusteinen nykytoimittajan neuvottelu, neuvotteluohjeet ja säästöseuranta ovat jo kilpailijoiden kuvaamaa tarjontaa. Lähimpiä vertailukohtia ovat [Pactumin Price List Agent](https://pactum.com/price-list-agents) ja [aPriorin aiSource](https://www.apriori.com/solutions/products/aisource/); laajempi vertailu on tutkimusmuistiossa. Yksittäisten ominaisuuksien uutuuden sijaan ehdotamme mitattavaa fokusta: pienen teollisen hankintatiimin nykytoimittajan hinnanmuutos käsitellään vähällä kokonaisvalmistelulla ja tarkistettavilla perusteilla.
+
+### Ehdotettu työnkulku
+
+**Uusi hinnasto → muutoksen tarkistus → ehtojen vertailu → ostajan hyväksymä RFQ tai game plan → päätös → toteuman tarkistus.**
+
+Ensimmäinen aineisto voi olla rajattu tiedostotuonti. Tämä ei poista PDF- tai sähköpostiyhteyden tuotetavoitetta; se erottaa hypoteesin testaamisen täyden integraation toteutuksesta. Jos pilottiasiakkaan data tukee paremmin nykyisten toimittajien rinnakkaisvertailua, aloitustapa vaihdetaan siihen.
+
+| Työnkulun osa | Ehdotettu ensimmäinen käyttäjälle näkyvä tulos | Tieto tai tarkistus, jota tarvitaan |
+| --- | --- | --- |
+| Hinnaston muutos | Ostaja ymmärtää muuttuneet rivit ja muutoksen voimaantulon. | Vanha ja uusi lähde, sama nimike, revisio ja yksikkö; ilmoitus erotetaan hyväksytystä ehdosta. |
+| Vertailu | Ostaja tunnistaa käyttökelpoisen vaihtoehdon ja puuttuvan vahvistuksen. | Määräporras, pakkauskoko, valuutta, toimitusehdot, voimassaolo sekä osan ja tehtaan hyväksyntä. |
+| Neuvotteluvalmistelu | Muokattava RFQ tai hinnantarkistuspyyntö sekä sisäinen game plan. | Yhteinen laskentapohja, perustelujen lähteet, ostajan vahvistamat ask ja LAA; LAA ei toimittajaversioon. |
+| Päätös | Valittu toimenpide, sovittu hinta, alkamispäivä ja suunniteltu määrä. | Lopputuloksen peruste; vaihtoehtoisten polkujen hyötyjä ei summata. |
+| Toteuma | Sovittu muutos yhdistyy ostoriveihin, tai poikkeama nostetaan selvitettäväksi. | Toteutuneet hinnat ja määrät, vertailuperuste sekä kohdistettavat lisäkustannukset. |
+
+### Ehdotetut hyväksymiskriteerit uudelle demolle
+
+Nämä koskevat tuotteen käyttäytymistä, eivät ruutujen tai komponenttien säilyttämistä:
+
+1. Ostaja löytää muutoksen syyn, lähteen, päätöksen ajankohdan ja seuraavan askeleen ilman selostajan apua.
+2. Eri hintayksiköissä olevat tarjoukset eivät muodosta virheellistä hintajärjestystä. Epäselvä nimike tai puuttuva hyväksyntä näkyy ratkaistavana tietona.
+3. Tarjouksen vanheneminen ennen suunniteltua hankintaa johtaa vahvistustarpeeseen. Halvempi historiallinen hinta ei näy toimituskelpoisena tarjouksena.
+4. Sekä nykytoimittajan hinnanparannus että vaihtoehtoisen toimittajan RFQ käyttävät tarkistettuja tietoja. Sisäinen hyväksymisraja ei siirry jaettavaan aineistoon.
+5. Sovittu hinta muuttaa vain sovittua vaikutusarviota. Toteutunut säästö vaatii ostotapahtumat; ristiriitainen laskutushinta näkyy poikkeamana.
+6. Esimerkkiaineisto, simuloitu toiminto ja oikeasti suoritettu toiminto erotetaan. Generoitu viesti ei tarkoita lähetettyä RFQ:ta.
+
+Ensimmäisessä demossa riittää näiden havainnollistaminen rajatulla aineistolla; tuotantovalmiutta ei väitetä. Käyttöliittymän voi toteuttaa kokonaan uudelleen. Nykyinen huono UI/UX ei ole hyväksymiskriteeri eikä säilytettävä vertailutaso.
+
+### Ehdotettu etenemisjärjestys ja avoimet päätökset
+
+Ensin testataan yksi aineistopolku ja valmistelumateriaali ostajan kanssa. Seuraavaksi lisätään oikeiden tarjousten täydentäminen, valmistelun ajoitus ja tuloksen kytkentä ostodataan. Laajempi kustannusmalli ja autonominen toimittajaviestintä odottavat erillistä päätöstä ja näyttöä tarpeesta. Tutkimuksen prioriteetit ovat kokeiden järjestystä, eivät kaikkien pidemmän aikavälin tavoitteiden peruuttamista.
+
+Avoinna ovat ensimmäinen asiakas ja kategoria, oikean aineiston saatavuus, vertailuperuste, ostajan sallima autonomia ja maksullisen jatkon ehdot. Pilotissa tavoitellaan ehdotuksena vähintään 50 % pienempää aktiivista valmistelutyötä ilman kriittisten vertailuvirheiden kasvua. Tavoite ei ole saavutettu tulos eikä markkinointilupaus. Käyttöönotto-, korjaus- ja tukityö mitataan erikseen, jotta niitä ei piiloteta ostajan ajansäästöön.

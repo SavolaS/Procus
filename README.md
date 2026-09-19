@@ -1,5 +1,23 @@
 # Procus
 
+## Design status — read before building
+
+**The current codebase has poor UI and UX. It is a rough prototype, not a design reference or an approved product experience.** The founder explicitly confirmed this on 19 September 2026.
+
+**The design is not locked.** Collaborators and coding agents are free to redesign the information architecture, navigation, layouts, visual style, components, interaction flows, and frontend structure. Do not preserve an awkward experience just because it already exists. Screenshots, the exported HTML mockup, and older Markdown descriptions of dashboards, tabs, or cards are exploratory material, not acceptance criteria for the redesign. Earlier statements that a particular dashboard or tab arrangement was confirmed are superseded by this clarification.
+
+Preserve the product intent and the meaning of the data: evidence-backed procurement decisions, comparable offers, distinct potential/agreed/realized savings, and separation of internal negotiation limits from supplier-facing material. Those principles do not prescribe a UI. Feature and research proposals below are not a locked implementation checklist. If a redesign changes which product capabilities are in scope, record that separately from the design decision.
+
+## Product and research notes
+
+- [Agent collaboration notes](AGENTS.md): explicit design freedom for collaborators and coding agents.
+- [Product plan](procus-tuotesuunnitelma.md): product direction, open design decisions, and proposed next workflow.
+- [Competitor research and differentiation](procus-kilpailijatutkimus.md): sourced market review, feature ideas, priorities, and validation plan.
+- [Development proposals](procus-kehitysehdotukset.md): earlier reasoning and the latest research synthesis.
+- [Original concept](procus.md): historical starting point with a current-status note.
+
+## Current prototype
+
 Interactive procurement workspace prototype. Three connected views split the workflow: **Products & suppliers** for inventory and flags, **Workflow** for case status, and **Spend** for the effect of agreed price changes. All views share the same fictional data: three manufacturers and nine products.
 
 ## Run
