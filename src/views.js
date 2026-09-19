@@ -1,9 +1,9 @@
 import { products, suppliers, states, months, period, signalTypes, agents, activity, conversations } from './data.js';
 import {
   getStatus, potentialSaving, annualSpend, alertLevel, isOpen, computeSpend,
-  alertCounts, pipeline, categoryTotals, spendSeries, openStates,
+  alertCounts, pipeline, categoryTotals, spendSeries, openStates, realisedSaving,
 } from './model.js';
-import { sparkline, priceChart, spendChart, compactEuro } from './chart.js';
+import { sparkline, priceChart, spendChart, bar } from './chart.js';
 
 export const eur = value => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
 export const unitPrice = value => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: value < 1 ? 3 : 2 }).format(value);
@@ -87,7 +87,7 @@ export function overview(ui) {
   <div class="p-kpis">
     ${kpi({ label: 'Annual purchasing spend', value: eur(totals.current), note: `${products.length} parts · ${suppliers.length} suppliers · ${period.start}–${period.end}` })}
     ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${(totals.potential / totals.current * 100).toFixed(1)}% of spend across ${open.length + stages[3].items.length} parts`, tone: 'opportunity' })}
-    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${stages[3].items.length} price changes agreed · run rate`, tone: 'success' })}
+    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${stages[3].items.length} price changes agreed · ${eur(totals.realised)} realised on invoices so far`, tone: 'success' })}
     ${kpi({
       label: 'Open alerts', value: String(counts.total), note: 'Signals waiting for a decision',
       tone: counts.critical ? 'alert' : '',
@@ -317,7 +317,7 @@ export function agentsView(ui) {
   <div class="p-kpis p-kpis--slim">
     ${kpi({ label: 'Agents running', value: `${running} of ${agents.length}`, note: 'Working continuously on your data' })}
     ${kpi({ label: 'Lines checked today', value: integer(checked), note: 'Price lists, invoices and orders' })}
-    ${kpi({ label: 'Signals raised', value: String(found), note: 'Each one carries its evidence', tone: 'opportunity' })}
+    ${kpi({ label: 'Signals raised', value: String(found), note: `${alertCounts(products, ui.statuses).total} still open, the rest agreed or dismissed`, tone: 'opportunity' })}
     ${kpi({ label: 'Waiting on you', value: String(queue.length), note: queue.length ? 'Agents are blocked until you decide' : 'Nothing is blocked', tone: queue.length ? 'alert' : 'success' })}
   </div>
 
@@ -402,10 +402,11 @@ export function spendView(ui) {
   }).sort((a, b) => b.current - a.current);
 
   return `
-  <div class="p-kpis">
+  <div class="p-kpis p-kpis--five">
     ${kpi({ label: 'Baseline spend · 12 months', value: eur(totals.current), note: `${products.length} parts at today's prices and fixed volumes` })}
-    ${kpi({ label: 'Agreed reduction', value: `−${eur(totals.agreed)}`, note: 'Applied to the projection below', tone: 'success' })}
-    ${kpi({ label: 'Still open', value: eur(totals.remaining), note: 'Identified but not yet agreed', tone: 'opportunity' })}
+    ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${eur(totals.remaining)} of it not yet agreed`, tone: 'opportunity' })}
+    ${kpi({ label: 'Agreed reduction', value: `−${eur(totals.agreed)}`, note: 'Price changes confirmed with suppliers · annual run rate', tone: 'success' })}
+    ${kpi({ label: 'Realised on invoices', value: `−${eur(totals.realised)}`, note: 'Actually paid at the agreed price so far', tone: 'success' })}
     ${kpi({ label: 'Spend after agreed changes', value: eur(totals.projected), note: 'Same volumes, agreed prices', tone: 'primary' })}
   </div>
 
@@ -424,7 +425,7 @@ export function spendView(ui) {
         <td class="p-num${row.agreed ? ' p-num--positive' : ''}">${row.agreed ? `−${eur(row.agreed)}` : '—'}</td>
         <td class="p-num">${eur(row.projected)}</td>
         <td class="p-num">${row.remaining ? eur(row.remaining) : '—'}</td>
-        <td><span class="p-bar"><span class="p-bar__fill" style="width:${(row.current / rows[0].current * 100).toFixed(1)}%"></span></span>
+        <td class="p-cell--bar">${bar(row.current / rows[0].current, 0, `${(row.current / totals.current * 100).toFixed(1)} per cent of total spend`)}
           <span class="p-bar__label">${(row.current / totals.current * 100).toFixed(1)}%</span></td></tr>`).join('')}
       <tr class="p-row p-row--total"><td>Total</td><td class="p-num">${eur(totals.current)}</td>
         <td class="p-num p-num--positive">−${eur(totals.agreed)}</td><td class="p-num">${eur(totals.projected)}</td>
@@ -435,10 +436,7 @@ export function spendView(ui) {
   ${card('Spend by category', `<ul class="p-categories">
     ${categories.map(entry => `<li>
       <span class="p-categories__name">${esc(entry.category)}<small>${entry.count} ${entry.count === 1 ? 'part' : 'parts'}</small></span>
-      <span class="p-bar p-bar--stack">
-        <span class="p-bar__fill" style="width:${(entry.current / biggest * 100).toFixed(1)}%"></span>
-        ${entry.potential ? `<span class="p-bar__opportunity" style="width:${(entry.potential / biggest * 100).toFixed(1)}%" title="${eur(entry.potential)} opportunity"></span>` : ''}
-      </span>
+      ${bar(entry.current / biggest, entry.potential / biggest, `${eur(entry.current)} annual spend, ${entry.potential ? eur(entry.potential) : 'no'} opportunity`)}
       <span class="p-categories__value">${eur(entry.current)}</span>
       <span class="p-categories__opportunity">${entry.potential ? eur(entry.potential) : '—'}</span></li>`).join('')}
   </ul>
@@ -447,6 +445,7 @@ export function spendView(ui) {
   <details class="p-notes"><summary>How these figures are calculated</summary>
     <p>Every amount uses fictional prices and fixed twelve-month volumes. An opportunity assumes the whole example volume moves to the reference price with no additional freight, tooling or qualification cost. These are planning scenarios, not realised savings.</p>
     <p>Moving a case to <strong>Agreed</strong> applies its reference price to the projection. Reopening it removes the reduction. Cases marked <strong>No action</strong> are excluded from opportunity totals. Agreed savings are part of the identified opportunity, never added on top of it.</p>
+    <p>Three figures are deliberately kept apart. <strong>Identified</strong> is what the evidence suggests is available. <strong>Agreed</strong> is what a supplier has confirmed, expressed as an annual run rate. <strong>Realised</strong> counts only months where purchases have actually been invoiced at the agreed price, so an agreement nobody has ordered against yet contributes nothing.</p>
   </details>`;
 }
 
@@ -510,7 +509,15 @@ export function detailPanel(ui) {
 
     <section class="p-detail__section">
       <h3>Next step</h3>
-      <p>${esc(current === 'Agreed' ? 'Verify the agreed price on the next purchase order, then track it against actual invoices.' : product.next)}</p>
+      <p>${esc(current === 'Agreed'
+        ? product.verifiedMonths
+          ? `Confirmed on ${product.verifiedMonths} ${product.verifiedMonths === 1 ? 'month' : 'months'} of invoices at ${unitPrice(product.target)}. Keep checking each purchase order until the full year is covered.`
+          : 'Agreed, but no purchases have been invoiced at the new price yet. Verify it on the next purchase order before counting the saving.'
+        : product.next)}</p>
+      ${current === 'Agreed' ? `<dl class="p-pairs p-pairs--tight">
+        <div><dt>Agreed run rate</dt><dd>−${eur(saving(product))} a year</dd></div>
+        <div><dt>Realised so far</dt><dd>${realisedSaving(product, ui.statuses) ? `−${eur(realisedSaving(product, ui.statuses))}` : 'Nothing yet'}</dd></div>
+      </dl>` : ''}
       ${thread ? `<div class="p-detail__thread">
         <span class="p-badge p-badge--${ui.handled.includes(thread.id) ? 'success' : conversationState[thread.state].tone}">${ui.handled.includes(thread.id) ? 'Handled by you' : conversationState[thread.state].label}</span>
         <p>${esc(thread.messages[thread.messages.length - 1].text)}</p>

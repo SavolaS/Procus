@@ -45,9 +45,18 @@ export function computeSpend(products, statuses = {}) {
     sum.current += annualSpend(product);
     if (status !== 'No action') sum.potential += saving;
     if (status === 'Agreed') sum.agreed += saving;
+    sum.realised += realisedSaving(product, statuses);
     return sum;
-  }, { current: 0, potential: 0, agreed: 0 });
+  }, { current: 0, potential: 0, agreed: 0, realised: 0 });
   return { ...totals, projected: totals.current - totals.agreed, remaining: totals.potential - totals.agreed };
+}
+
+// Realised savings come from invoices, not from a status change: marking a case
+// Agreed in the workspace adds nothing here until purchases are recorded at the
+// new price. Realised is always a subset of agreed, which is a subset of potential.
+export function realisedSaving(product, statuses = {}) {
+  if (getStatus(product, statuses) !== 'Agreed' || !product.verifiedMonths) return 0;
+  return Math.round(potentialSaving(product) * (product.verifiedMonths / 12));
 }
 
 export function alertCounts(products, statuses = {}) {

@@ -4,6 +4,7 @@ import { products, states, suppliers, conversations, agents } from '../src/data.
 import {
   computeSpend, potentialSaving, alertLevel, alertCounts, isOpen, pipeline,
   categoryTotals, spendSeries, restoreState, persistState, loadState, annualSpend,
+  realisedSaving,
 } from '../src/model.js';
 
 test('the sample data set is large enough to show a portfolio, not a demo', () => {
@@ -16,7 +17,8 @@ test('the sample data set is large enough to show a portfolio, not a demo', () =
 
 test('baseline spend, opportunity and agreed savings share one set of volume assumptions', () => {
   assert.deepEqual(computeSpend(products), {
-    current: 25725890, potential: 1457631, agreed: 185032, projected: 25540858, remaining: 1272599,
+    current: 25725890, potential: 1457631, agreed: 185032, realised: 34469,
+    projected: 25540858, remaining: 1272599,
   });
 });
 
@@ -34,6 +36,23 @@ test('dismissing an opportunity removes it from both totals', () => {
   const dismissed = potentialSaving(products.find(p => p.id === 'BC-112'));
   assert.equal(result.potential, computeSpend(products).potential - dismissed);
   assert.equal(result.agreed, computeSpend(products).agreed - dismissed);
+});
+
+test('realised savings are a subset of agreed, which is a subset of identified', () => {
+  const totals = computeSpend(products);
+  assert.ok(totals.realised > 0);
+  assert.ok(totals.realised < totals.agreed, 'not every agreement has reached an invoice');
+  assert.ok(totals.agreed < totals.potential);
+  assert.equal(totals.realised, 34469);
+});
+
+test('marking a case agreed in the workspace realises nothing until it is invoiced', () => {
+  const fresh = products.find(product => product.signal && product.status !== 'Agreed');
+  assert.equal(realisedSaving(fresh, { [fresh.id]: 'Agreed' }), 0);
+  assert.equal(computeSpend(products, { [fresh.id]: 'Agreed' }).realised, computeSpend(products).realised);
+  const verified = products.find(product => product.verifiedMonths > 0);
+  assert.equal(realisedSaving(verified, {}), Math.round(potentialSaving(verified) * verified.verifiedMonths / 12));
+  assert.equal(realisedSaving(verified, { [verified.id]: 'Negotiating' }), 0, 'reopening a case withdraws the realised saving');
 });
 
 test('missing and higher reference prices never imply a saving', () => {

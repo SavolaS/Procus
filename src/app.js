@@ -1,9 +1,9 @@
 import { products, states, suppliers, conversations } from './data.js';
 import {
-  getStatus, potentialSaving, alertCounts, isOpen, computeSpend,
+  getStatus, alertCounts, isOpen, computeSpend,
   restoreState, persistState, loadState, openStates,
 } from './model.js';
-import { renderers, detailPanel, productRows, viewMeta, eur, esc, topOpportunity } from './views.js';
+import { renderers, detailPanel, productRows, viewMeta, eur, topOpportunity } from './views.js';
 
 const root = document.getElementById('procus-workspace');
 const $ = selector => root.querySelector(selector);

@@ -95,6 +95,11 @@ export const signalTypes = {
   expiry: { label: 'Agreement ending soon', short: 'Contract ending', agent: 'Contract Watch' },
 };
 
+// Months of invoices already seen at the agreed price. This is what separates a
+// realised saving from an agreed one: an agreement that nothing has been bought
+// against yet is worth nothing until it shows up on an invoice.
+const verifiedMonths = { 'BC-112': 4, 'TM-304': 6, 'RP-115': 2, 'VP-260': 0, 'KT-077': 0 };
+
 const money = value => `€${value.toFixed(value < 1 ? 3 : 2)}`;
 const pct = value => `${value > 0 ? '+' : ''}${value.toFixed(1)} %`;
 const owners = ['Alex Kim', 'Mira Laine', 'Tomas Berg', 'Sofia Ruiz'];
@@ -180,6 +185,7 @@ export const products = catalog.flatMap(([supplierName, rows]) => {
       gapPct: reductionPct,
       history: buildHistory(price, change, signal, random),
       owner: signal ? owners[(id.charCodeAt(3) + index) % owners.length] : '—',
+      verifiedMonths: verifiedMonths[id] ?? 0,
       daysInStage: signal ? 3 + Math.floor(random() * 26) : 0,
     };
     const copy = signal ? evidence[signal](product) : quietEvidence(product);

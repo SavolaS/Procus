@@ -114,4 +114,19 @@ export function spendChart(series, months, labels) {
   </figure>`;
 }
 
+// Proportion bars are drawn as SVG rather than a styled div: the app is served
+// under a strict Content-Security-Policy with no 'unsafe-inline', so an inline
+// style attribute would be dropped and every bar would render full width.
+export function bar(fraction, overlay = 0, label = '') {
+  const width = 200;
+  const height = 8;
+  const clamp = value => Math.max(0, Math.min(1, value)) * width;
+  return `<svg class="p-bar" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"
+    role="img" aria-label="${label}">
+    <rect class="p-bar__track" width="${width}" height="${height}" rx="2"/>
+    <rect class="p-bar__fill" width="${clamp(fraction).toFixed(1)}" height="${height}" rx="2"/>
+    ${overlay ? `<rect class="p-bar__overlay" width="${clamp(overlay).toFixed(1)}" height="${height}" rx="2"/>` : ''}
+  </svg>`;
+}
+
 export { compact as compactEuro };
