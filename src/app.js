@@ -1,10 +1,12 @@
-import { products, states, suppliers, conversations } from './data.js';
+import { negotiationDialog, supplierDraft } from './negotiation.js';
+import { products, states, suppliers, conversations, agents, period } from './data.js';
 import {
   getStatus, alertCounts, isOpen, computeSpend,
   restoreState, persistState, loadState, openStates,
 } from './model.js';
 import { renderers, detailPanel, productRows, viewMeta, eur, topOpportunity } from './views.js';
 
+let returnFocus = null;
 const root = document.getElementById('procus-workspace');
 const $ = selector => root.querySelector(selector);
 
@@ -23,16 +25,14 @@ function pageHeader() {
   const totals = computeSpend(products, ui.statuses);
   const counts = alertCounts(products, ui.statuses);
   const meta = {
-    overview: [`${suppliers.length} suppliers`, `${products.length} parts`, `${eur(totals.current)} annual spend`],
+    overview: [`${period.start} – ${period.end}`, 'EUR'],
     products: [`${products.length} parts`, `${suppliers.length} suppliers`, `${counts.total} open alerts`],
     workflow: [`${openCases().length} open cases`, `${eur(totals.remaining)} still open`],
-    agents: ['6 agents', `${blockedQueue().length} waiting on you`],
-    spend: [`${eur(totals.current)} baseline`, `${eur(totals.potential)} identified`],
+    agents: [`${agents.length} agents`, `${blockedQueue().length} decisions pending`],
+    spend: [`${period.start} – ${period.end}`, 'EUR'],
   }[ui.view];
-  const actions = ui.view === 'products' && ui.detailOpen
-    ? '<button type="button" class="p-button" id="p-close-detail">Close detail</button>' : '';
+  const actions = '';
   return `<div class="p-pagehead__main">
-      <p class="p-pagehead__crumb">Procurement workspace</p>
       <h1>${title}</h1>
       <p class="p-pagehead__sub">${subtitle}</p>
     </div>
@@ -59,6 +59,20 @@ function syncNav() {
 function render() {
   $('#p-pagehead').innerHTML = pageHeader();
   $('#p-view').innerHTML = renderers[ui.view](ui);
+  $('#p-overlay').innerHTML = negotiationDialog(ui);
+  const overlayOpen = Boolean(ui.negotiation || ui.detailOpen);
+  document.body.classList.toggle('has-overlay', overlayOpen);
+  $('.p-globalheader').inert = overlayOpen;
+  $('.p-sidebar').inert = overlayOpen;
+  $('#p-pagehead').inert = overlayOpen;
+  $('#p-view').inert = Boolean(ui.negotiation);
+  if (ui.detailOpen && !ui.negotiation) {
+    for (const node of $('#p-view').children) {
+      if (node.classList.contains('p-work')) {
+        for (const child of node.children) child.inert = !child.matches('.p-detail, .p-drawer-shade');
+      } else node.inert = true;
+    }
+  }
   if (ui.view === 'products') refreshRows();
   syncNav();
   document.title = `Procus — ${viewMeta[ui.view][0]}`;
@@ -71,10 +85,11 @@ function refreshRows() {
 }
 
 function revealDetail() {
-  if (window.matchMedia('(max-width: 1240px)').matches) $('#p-detail')?.scrollIntoView({ block: 'start' });
+  $('#p-detail')?.focus({ preventScroll: true });
 }
 
 function openProduct(id, view = ui.view) {
+  returnFocus = `[data-product="${id}"]`;
   ui.view = ['products', 'workflow'].includes(view) ? view : 'products';
   ui.selected = id;
   ui.detailOpen = true;
@@ -92,7 +107,56 @@ function openProduct(id, view = ui.view) {
   save();
 }
 
-root.addEventListener('click', event => {
+function closeOverlay() {
+  ui.negotiation = null;
+  ui.detailOpen = false;
+  ui.brief = false;
+  render();
+  (returnFocus && root.querySelector(returnFocus) || root.querySelector('[aria-current="page"]'))?.focus({ preventScroll: true });
+}
+
+root.addEventListener('keydown', event => {
+  const dialog = root.querySelector('[role="dialog"]');
+  if (!dialog) return;
+  if (event.key === 'Escape') { event.preventDefault(); closeOverlay(); return; }
+  if (event.key !== 'Tab') return;
+  const focusable = [...dialog.querySelectorAll('button, input, select, textarea, [tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+  const first = focusable[0], last = focusable.at(-1);
+  if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) { event.preventDefault(); last?.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+});
+
+root.addEventListener('click', async event => {
+  const generate = event.target.closest('[data-generate]');
+  if (generate) {
+    const product = products.find(p => p.id === generate.dataset.generate);
+    if (!product || product.target == null) return;
+    returnFocus = `[data-generate="${product.id}"]`;
+    ui.detailOpen = false;
+    ui.negotiation = { id: product.id, step: 'plan', draft: supplierDraft(product) };
+    render();
+    $('.p-negotiation')?.focus();
+    return;
+  }
+  if (event.target.closest('[data-close-negotiation], [data-close-detail]')) { closeOverlay(); return; }
+  if (event.target.closest('[data-draft-message], [data-plan-back]')) {
+    ui.negotiation.step = event.target.closest('[data-draft-message]') ? 'draft' : 'plan';
+    $('#p-overlay').innerHTML = negotiationDialog(ui);
+    $('.p-negotiation')?.focus();
+    return;
+  }
+  if (event.target.closest('[data-copy-draft]')) {
+    try {
+      await navigator.clipboard.writeText(ui.negotiation.draft);
+      $('#p-draft-feedback').textContent = 'Draft copied. Nothing has been sent.';
+    } catch {
+      $('#p-message-body').focus();
+      $('#p-message-body').select();
+      $('#p-draft-feedback').textContent = 'Select and copy the message with your keyboard.';
+    }
+    return;
+  }
+
   const goto = event.target.closest('[data-goto]');
   if (goto) {
     const { goto: view, product, alert: level, thread } = goto.dataset;
@@ -165,18 +229,12 @@ root.addEventListener('click', event => {
     return;
   }
 
-  if (event.target.closest('#p-close-detail')) {
-    ui.detailOpen = false;
-    ui.brief = false;
-    render();
-    root.querySelector(`[data-product="${ui.selected}"]`)?.focus({ preventScroll: true });
-    return;
-  }
+  if (event.target.closest('#p-close-detail')) { closeOverlay(); return; }
 
   if (event.target.closest('#p-brief')) {
     // Replace only the panel so the rest of the page, and its scroll position, stay put.
     ui.brief = !ui.brief;
-    $('#p-detail').outerHTML = detailPanel(ui);
+    render();
     $('#p-brief')?.focus({ preventScroll: true });
     return;
   }
@@ -213,6 +271,7 @@ root.addEventListener('click', event => {
 });
 
 root.addEventListener('input', event => {
+  if (event.target.id === 'p-message-body' && ui.negotiation) { ui.negotiation.draft = event.target.value; return; }
   if (event.target.id !== 'p-search') return;
   ui.query = event.target.value;
   refreshRows();

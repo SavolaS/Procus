@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#032d60">
+  <meta name="theme-color" content="#ffffff">
   <title>Procus — Procurement workspace</title>
   <link rel="stylesheet" href="/src/styles.css">
   <script type="module" src="/src/app.js"></script>
@@ -11,28 +11,28 @@
 <body>
 <div id="procus-workspace">
   <header class="p-globalheader">
-    <span class="p-brand">procus<span aria-hidden="true">.</span></span>
+    <span class="p-brand"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="m14 3 10 6v10l-10 6-10-6V9Z"/><path d="m4 9 10 6 10-6M14 15v10M9 6l10 6v6"/></svg>procus<span aria-hidden="true">.</span></span>
     <span class="p-globalheader__divider" aria-hidden="true"></span>
-    <span class="p-globalheader__app">Procurement</span>
+    <span class="p-globalheader__app">Procurement workspace</span>
     <div class="p-globalheader__right">
-      <span class="p-tag" title="Every figure in this prototype is fictional">Sample data</span>
+      <span class="p-demo-label" title="Every figure in this prototype is fictional">Demo workspace</span>
       <span class="p-user"><span class="p-avatar">AK</span><span class="p-user__name">Alex Kim<small>Procurement manager</small></span></span>
     </div>
   </header>
 
   <aside class="p-sidebar">
-    <nav class="p-nav" aria-label="Workspace views">
+    <nav class="p-nav" aria-label="Workspace views"><p class="p-nav__label">Workspace</p>
       <button type="button" class="p-tab" data-view="overview" aria-current="page">
         <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="6" height="8" rx="1.2"/><rect x="11" y="3" width="6" height="5" rx="1.2"/><rect x="3" y="13" width="6" height="4" rx="1.2"/><rect x="11" y="10" width="6" height="7" rx="1.2"/></svg>
         <span>Overview</span></button>
       <button type="button" class="p-tab" data-view="products">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2.5 6.5 3.5v8L10 17.5 3.5 14V6L10 2.5Z"/><path d="M10 10.5 16.5 6M10 10.5 3.5 6m6.5 4.5v7"/></svg>
-        <span>Parts &amp; suppliers</span><span class="p-nav__count" data-count="products"></span></button>
+        <span>Parts &amp; suppliers</span></button>
       <button type="button" class="p-tab" data-view="workflow">
-        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4" width="4.5" height="12" rx="1.2"/><rect x="7.8" y="4" width="4.5" height="12" rx="1.2"/><rect x="13.1" y="4" width="4.5" height="12" rx="1.2"/></svg>
-        <span>Workflow</span><span class="p-nav__count" data-count="workflow"></span></button>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1.3"/><rect x="13" y="13" width="5" height="5" rx="1.3"/><path d="M4.5 7v8.5H13M7 4.5h8.5V10m-2-2 2 2 2-2"/></svg>
+        <span>Workflow</span></button>
       <button type="button" class="p-tab" data-view="agents">
-        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3.5" y="6" width="13" height="9" rx="2.5"/><path d="M10 6V3M7 10.2h.01M13 10.2h.01M7.8 12.6h4.4"/></svg>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 7 4v8l-7 4-7-4V6Z"/><path d="m6 11 2.5-3 3 4L14 9"/></svg>
         <span>Agents</span><span class="p-nav__count" data-count="agents"></span></button>
       <button type="button" class="p-tab" data-view="spend">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 16.5V3.5M3 16.5h14"/><path d="m6 13 3.5-4 3 2.5L17 6"/></svg>
@@ -45,6 +45,7 @@
     <div id="p-view"></div>
     <noscript><p class="p-note">This interactive prototype requires JavaScript.</p></noscript>
   </main>
+  <div id="p-overlay"></div>
 </div>
 </body>
 </html>

@@ -36,7 +36,7 @@ function badge(level, size = '') {
 function signalBadge(product, ui) {
   const state = status(product, ui);
   if (!product.signal) return '<span class="p-badge p-badge--quiet">Monitoring</span>';
-  if (state === 'Agreed') return '<span class="p-badge p-badge--success">Agreed</span>';
+  if (state === 'Agreed' || state === 'No action') return '';
   if (state === 'No action') return '<span class="p-badge p-badge--quiet">Dismissed</span>';
   return badge(alertLevel(product));
 }
@@ -67,79 +67,51 @@ function kpi({ label, value, note, tone = '', foot = '' }) {
 
 /* ---------------------------------------------------------------- Overview */
 
+function agentFinding(ui) {
+  const product = openItems(ui).filter(p => p.signal === 'increase').sort(byPriority)[0];
+  if (!product) return '';
+  return `<section class="p-finding" aria-label="Agent price alert">
+    <span class="p-finding__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16V8l8-4 8 4v8l-8 4-8-4Z"/><path d="m8 13 3-3 3 2 3-5"/></svg></span>
+    <div class="p-finding__body"><p class="p-finding__eyebrow">Price Watch <span>·</span> Price increase flagged</p>
+      <h2>${esc(product.name)} is up ${product.change.toFixed(1)}%</h2>
+      <p>${esc(product.supplier)} · ${product.id} <span class="p-finding__divider">/</span> ${eur(saving(product))} potential annual saving</p></div>
+    <button type="button" class="p-button p-button--brand" data-generate="${product.id}">Generate negotiation plan <span aria-hidden="true">→</span></button>
+  </section>`;
+}
+
 function overview(ui) {
   const totals = computeSpend(products, ui.statuses);
   const counts = alertCounts(products, ui.statuses);
-  const open = openItems(ui);
   const stages = pipeline(products, ui.statuses, states);
-  const series = spendSeries(products, ui.statuses);
-  const priority = [...open].sort(byPriority).slice(0, 6);
-  const criticalValue = open.filter(product => alertLevel(product) === 'critical').reduce((sum, product) => sum + saving(product), 0);
-  const queue = conversations.filter(entry => entry.needs && !ui.handled.includes(entry.id));
-
-  return `
-  ${counts.critical ? `<div class="p-banner p-banner--critical" role="status">
-    <span class="p-banner__icon" aria-hidden="true">!</span>
-    <p><strong>${counts.critical} critical price ${counts.critical === 1 ? 'alert' : 'alerts'} worth ${eur(criticalValue)} a year.</strong>
-      Each one has evidence attached and a prepared next step.</p>
-    <button type="button" class="p-button p-button--inverse" data-goto="products" data-alert="critical">Show critical alerts</button></div>` : ''}
-
-  <div class="p-kpis">
-    ${kpi({ label: 'Annual purchasing spend', value: eur(totals.current), note: `${products.length} parts · ${suppliers.length} suppliers · ${period.start}–${period.end}` })}
-    ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${(totals.potential / totals.current * 100).toFixed(1)}% of spend across ${open.length + stages[3].items.length} parts`, tone: 'opportunity' })}
-    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${stages[3].items.length} price changes agreed · ${eur(totals.realised)} realised on invoices so far`, tone: 'success' })}
-    ${kpi({
-      label: 'Open alerts', value: String(counts.total), note: 'Signals waiting for a decision',
-      tone: counts.critical ? 'alert' : '',
-      foot: `<span class="p-kpi__split">${['critical', 'warning', 'watch'].map(level =>
-        `<button type="button" class="p-chip p-chip--${level}" data-goto="products" data-alert="${level}">${counts[level]} ${alertMeta[level].label.toLowerCase()}</button>`).join('')}</span>`,
+  const priority = [...openItems(ui)].sort(byPriority).slice(0, 5);
+  const running = agents.filter(a => a.state === 'running' && !ui.paused.includes(a.id)).length;
+  return `<div class="p-kpis">
+    ${kpi({ label: 'Annual purchasing spend', value: eur(totals.current), note: `${products.length} parts across ${suppliers.length} suppliers` })}
+    ${kpi({ label: 'Open opportunity', value: eur(totals.remaining), note: 'Potential annual savings · not yet agreed' })}
+    ${kpi({ label: 'Agreed savings', value: eur(totals.agreed), note: `${eur(totals.realised)} realised on invoices`, tone: 'success' })}
+    ${kpi({ label: 'Active negotiations', value: String(stages[2].items.length), note: `${counts.critical} critical price signals to review` })}
+  </div>
+  ${agentFinding(ui)}
+  <div class="p-grid p-grid--overview">
+    ${card('Purchasing spend', spendChart(spendSeries(products, ui.statuses), months, forecastLabels), {
+      meta: 'Monthly · EUR', action: '<button type="button" class="p-button p-button--quiet" data-goto="spend">View report →</button>',
     })}
-  </div>
-
-  <section class="p-path" aria-label="Procurement pipeline">
-    ${stages.map((stage, index) => `<div class="p-path__step" data-state="${esc(stage.state)}" data-position="${index}">
+    ${card('Negotiation pipeline', `<ol class="p-pipeline">${stages.filter(s => s.state !== 'No action').map(stage => `<li>
       <button type="button" data-goto="workflow" data-stage="${esc(stage.state)}">
-        <span class="p-path__name">${esc(stage.state)}</span>
-        <span class="p-path__count">${stage.items.length}</span>
-        <span class="p-path__value">${stage.value ? `${eur(stage.value)} at stake` : 'No open value'}</span>
-        ${stage.stalled.length ? `<span class="p-path__warn">${stage.stalled.length} over 21 days</span>` : ''}
-      </button></div>`).join('')}
-  </section>
-
-  <div class="p-grid p-grid--2">
-    ${card('Needs your attention', `<ol class="p-alertlist">
-      ${priority.map(product => `<li>
-        <button type="button" data-goto="products" data-product="${product.id}">
-          <span class="p-alertlist__bar" data-level="${alertLevel(product)}" aria-hidden="true"></span>
-          <span class="p-alertlist__main">
-            <strong>${esc(product.name)}</strong>
-            <span class="p-alertlist__sub">${esc(product.supplier)} · ${product.id} · ${esc(signalTypes[product.signal].label)}</span>
-          </span>
-          ${badge(alertLevel(product))}
-          <span class="p-alertlist__value">${eur(saving(product))}<small>a year</small></span>
-        </button></li>`).join('')}
-    </ol>`, {
-    meta: `${open.length} open`,
-    action: `<button type="button" class="p-button p-button--brand" data-goto="products" data-alert="all">Open all alerts</button>`,
-  })}
-
-    ${card('Your agents', `<ul class="p-agentmini">
-      ${agents.slice(0, 4).map(agent => `<li>
-        <span class="p-state" data-state="${agent.state}">${agent.state}</span>
-        <span class="p-agentmini__main"><strong>${esc(agent.name)}</strong><span>${esc(agent.now)}</span></span>
-      </li>`).join('')}
-    </ul>
-    ${queue.length ? `<p class="p-agentmini__queue"><strong>${queue.length}</strong> ${queue.length === 1 ? 'item needs' : 'items need'} your decision before an agent can continue.</p>` : '<p class="p-agentmini__queue">Nothing is waiting on you right now.</p>'}`, {
-    meta: `${agents.filter(agent => agent.state === 'running').length} running`,
-    action: '<button type="button" class="p-button" data-goto="agents">Open agents</button>',
-  })}
+        ${statusPill(stage.state)}<span class="p-pipeline__count">${stage.items.length}</span><strong>${eur(stage.value)}</strong>
+      </button></li>`).join('')}</ol><p class="p-panelnote">Potential and agreed annual impact by stage.</p>`, {action: '<button type="button" class="p-button p-button--quiet" data-goto="workflow">View all →</button>'})}
   </div>
-
-  ${card('Spend trend', spendChart(series, months, forecastLabels), {
-    meta: `Monthly · ${period.start} – ${period.end}`,
-    action: '<button type="button" class="p-button" data-goto="spend">Spend detail</button>',
-    wide: true,
-  })}`;
+  <div class="p-grid p-grid--overview">
+    ${card('Priority parts', `<div class="p-prioritylabels"><span>Part / supplier</span><span>Annual opportunity</span></div><ol class="p-alertlist">
+      ${priority.map(product => `<li><button type="button" data-goto="products" data-product="${product.id}">
+        <span class="p-alertlist__main"><strong>${esc(product.name)}</strong><span class="p-alertlist__sub">${product.id} · ${esc(product.supplier)}</span></span>
+        <span class="p-alertlist__value">${eur(saving(product))}<small>${percent(product.change)} price change</small></span>
+      </button></li>`).join('')}</ol>`, { meta: `${counts.total} open signals`, action: '<button type="button" class="p-button p-button--quiet" data-goto="products">View parts →</button>' })}
+    ${card('Agent activity', `<ul class="p-agentmini">${agents.slice(0, 4).map(agent => {
+      const state = ui.paused.includes(agent.id) ? 'paused' : agent.state;
+      return `<li><span class="p-agentmini__main"><strong>${esc(agent.name)}</strong><span>${esc(state === 'paused' ? 'Paused by you. Findings are retained.' : agent.now)}</span></span><span class="p-state" data-state="${state}">${state}</span></li>`;
+    }).join('')}</ul>`, { meta: `${running} running`, action: '<button type="button" class="p-button p-button--quiet" data-goto="agents">Manage →</button>' })}
+  </div>`;
 }
 
 /* -------------------------------------------------------------- Products */
@@ -168,8 +140,7 @@ export function productRows(ui) {
         <span class="p-row__supplier"><strong>${esc(supplier.name)}</strong>
         <span class="p-row__sub">${esc(supplier.country)} · ${esc(supplier.focus)} · ${rows.length} ${rows.length === 1 ? 'part' : 'parts'}</span></span></button></td>
       <td class="p-num">${eur(totals.current)}</td>
-      <td>${counts.total ? `<span class="p-dots">${['critical', 'warning', 'watch'].filter(level => counts[level])
-        .map(level => `<span class="p-dot" data-level="${level}">${counts[level]}</span>`).join('')}</span>` : '<span class="p-quiet">No open alerts</span>'}</td>
+      <td><span class="p-quiet">${counts.total} open signals</span></td>
       <td></td>
       <td class="p-num">${totals.potential ? `<strong>${eur(totals.potential)}</strong>` : '—'}</td></tr>`;
     if (collapsed) continue;
@@ -200,11 +171,9 @@ function productsView(ui) {
   return `
   <div class="p-alertbar" role="group" aria-label="Filter by alert severity">
     ${chips.map(([value, label, count]) => `<button type="button" class="p-alertbar__chip${ui.alertFilter === value ? ' is-active' : ''}" data-alert="${value}" aria-pressed="${ui.alertFilter === value}">
-      ${value === 'all' ? '' : `<span class="p-dot" data-level="${value}" aria-hidden="true"></span>`}
-      <span class="p-alertbar__count">${count}</span><span>${label}</span>
-      ${value === 'all' ? '' : `<small>${alertMeta[value].note}</small>`}</button>`).join('')}
-    ${next ? `<button type="button" class="p-button p-button--brand p-alertbar__next" id="p-review-next">
-      Review biggest: ${esc(next.name)} · ${eur(saving(next))}</button>` : ''}
+      <span>${label}</span><span class="p-alertbar__count">${count}</span></button>`).join('')}
+    ${next ? `<button type="button" class="p-button p-button--quiet p-alertbar__next" id="p-review-next">
+      Review priority part →</button>` : ''}
   </div>
 
   <div class="p-toolbar">
@@ -219,7 +188,7 @@ function productsView(ui) {
 
   <div class="p-work${ui.detailOpen ? ' has-detail' : ''}">
     <section class="p-card p-card--table" aria-label="Suppliers and parts">
-      <div class="p-tablewrap"><table>
+      <div class="p-tablewrap" tabindex="0" aria-label="Parts table, scroll for more columns"><table class="p-table--parts"><colgroup><col class="p-col-part"><col class="p-col-trend"><col class="p-col-money"><col class="p-col-signal"><col class="p-col-status"><col class="p-col-money"></colgroup>
         <thead><tr>
           <th scope="col">Part / supplier</th><th scope="col">12-month price trend</th>
           <th scope="col" class="p-num">Annual spend</th><th scope="col">Signal</th>
@@ -248,6 +217,7 @@ function workflowView(ui) {
     ${kpi({ label: 'Waiting over 21 days', value: String(stalled), note: stalled ? 'Cases losing momentum' : 'Nothing is stalled', tone: stalled ? 'alert' : '' })}
   </div>
 
+  ${agentFinding(ui)}
   <div class="p-work${ui.detailOpen ? ' has-detail' : ''}">
     <div class="p-board">
       ${stages.map(stage => {
@@ -259,26 +229,15 @@ function workflowView(ui) {
         <header class="p-lane__head">
           <div class="p-lane__title">${statusPill(stage.state)}<span class="p-lane__count">${stage.items.length}</span></div>
           <p class="p-lane__value">${stage.value ? `${eur(stage.value)} annual impact` : 'No open value'}</p>
-          <dl class="p-lane__facts">
-            ${isQuiet ? '<div><dt>Reviewed</dt><dd>Monitored on every price change</dd></div>'
-              : resolved ? `
-            <div><dt>Owners</dt><dd>${owners}</dd></div>
-            <div><dt>Agreed</dt><dd>${stage.oldest ? `latest ${stage.oldest} days ago` : '—'}</dd></div>
-            <div><dt>Next</dt><dd>Verify on the next purchase order</dd></div>` : `
-            <div><dt>Owners</dt><dd>${owners}</dd></div>
-            <div><dt>Oldest</dt><dd>${stage.oldest ? `${stage.oldest} days in stage` : '—'}</dd></div>
-            ${stage.stalled.length ? `<div class="is-warn"><dt>Stalled</dt><dd>${stage.stalled.length} over 21 days</dd></div>` : ''}`}
-          </dl>
+          <p class="p-lane__summary">${isQuiet ? 'Reviewed and monitored' : resolved ? 'Verify on the next invoice' : `${stage.stalled.length} waiting over 21 days`}</p>
         </header>
         <div class="p-lane__cards">
         ${list.map(product => {
           const level = isOpen(product, ui.statuses) ? alertLevel(product) : null;
           const selected = ui.detailOpen && ui.selected === product.id;
-          const mark = level ? badge(level, ' p-badge--mini')
-            : resolved ? '<span class="p-badge p-badge--success p-badge--mini">Agreed</span>' : '';
+          const mark = level === 'critical' ? badge(level, ' p-badge--mini') : '';
           return `<button type="button" class="p-case${selected ? ' is-selected' : ''}" data-product="${product.id}" aria-pressed="${selected}">
-            ${level ? `<span class="p-case__bar" data-level="${level}" aria-hidden="true"></span>`
-              : resolved ? '<span class="p-case__bar" data-level="agreed" aria-hidden="true"></span>' : ''}
+
             <span class="p-case__top"><span class="p-case__supplier">${esc(product.supplier)}</span>${mark}</span>
             <strong>${esc(product.name)}</strong>
             <span class="p-case__meta">${product.id} · ${esc(product.signal ? signalTypes[product.signal].short : 'Monitoring')}</span>
@@ -330,7 +289,7 @@ function agentsView(ui) {
       </div>
       <p class="p-queue__ask">${esc(entry.ask)}</p>
       <div class="p-queue__actions">
-        <button type="button" class="p-button p-button--brand" data-resolve="${entry.id}" data-choice="approve">${entry.needs === 'approval' ? 'Approve and send' : entry.needs === 'input' ? 'Confirm and continue' : 'Accept agent recommendation'}</button>
+        <button type="button" class="p-button p-button--brand" data-resolve="${entry.id}" data-choice="approve">${entry.needs === 'approval' ? 'Approve draft (demo)' : entry.needs === 'input' ? 'Confirm and continue' : 'Accept agent recommendation'}</button>
         <button type="button" class="p-button" data-resolve="${entry.id}" data-choice="handover">Take over myself</button>
         <button type="button" class="p-button p-button--quiet" data-resolve="${entry.id}" data-choice="dismiss">Not now</button>
         ${entry.product ? `<button type="button" class="p-button p-button--quiet" data-goto="products" data-product="${entry.product}">Open ${entry.product}</button>` : ''}
@@ -402,12 +361,11 @@ function spendView(ui) {
   }).sort((a, b) => b.current - a.current);
 
   return `
-  <div class="p-kpis p-kpis--five">
+  <div class="p-kpis">
     ${kpi({ label: 'Baseline spend · 12 months', value: eur(totals.current), note: `${products.length} parts at today's prices and fixed volumes` })}
     ${kpi({ label: 'Identified opportunity', value: eur(totals.potential), note: `${eur(totals.remaining)} of it not yet agreed`, tone: 'opportunity' })}
     ${kpi({ label: 'Agreed reduction', value: `−${eur(totals.agreed)}`, note: 'Price changes confirmed with suppliers · annual run rate', tone: 'success' })}
     ${kpi({ label: 'Realised on invoices', value: `−${eur(totals.realised)}`, note: 'Actually paid at the agreed price so far', tone: 'success' })}
-    ${kpi({ label: 'Spend after agreed changes', value: eur(totals.projected), note: 'Same volumes, agreed prices', tone: 'primary' })}
   </div>
 
   ${card('Spend trend and opportunity', spendChart(series, months, forecastLabels), {
@@ -415,7 +373,7 @@ function spendView(ui) {
   })}
 
   <div class="p-grid p-grid--wide">
-    ${card('Spend by supplier', `<div class="p-tablewrap"><table>
+    ${card('Spend by supplier', `<div class="p-tablewrap" tabindex="0" aria-label="Supplier spend table, scroll for more columns"><table class="p-table--spend"><colgroup><col class="p-col-supplier"><col class="p-col-money"><col class="p-col-money"><col class="p-col-money"><col class="p-col-money"><col class="p-col-share"></colgroup>
       <thead><tr><th scope="col">Supplier</th><th scope="col" class="p-num">Baseline</th><th scope="col" class="p-num">Agreed</th>
         <th scope="col" class="p-num">After changes</th><th scope="col" class="p-num">Still open</th><th scope="col">Share of spend</th></tr></thead>
       <tbody>
@@ -425,15 +383,15 @@ function spendView(ui) {
         <td class="p-num${row.agreed ? ' p-num--positive' : ''}">${row.agreed ? `−${eur(row.agreed)}` : '—'}</td>
         <td class="p-num">${eur(row.projected)}</td>
         <td class="p-num">${row.remaining ? eur(row.remaining) : '—'}</td>
-        <td class="p-cell--bar">${bar(row.current / rows[0].current, 0, `${(row.current / totals.current * 100).toFixed(1)} per cent of total spend`)}
-          <span class="p-bar__label">${(row.current / totals.current * 100).toFixed(1)}%</span></td></tr>`).join('')}
+        <td class="p-cell--bar"><span class="p-share">${bar(row.current / totals.current, 0, `${(row.current / totals.current * 100).toFixed(1)} per cent of total spend`)}
+          <span class="p-bar__label">${(row.current / totals.current * 100).toFixed(1)}%</span></span></td></tr>`).join('')}
       <tr class="p-row p-row--total"><td>Total</td><td class="p-num">${eur(totals.current)}</td>
         <td class="p-num p-num--positive">−${eur(totals.agreed)}</td><td class="p-num">${eur(totals.projected)}</td>
         <td class="p-num">${eur(totals.remaining)}</td><td></td></tr>
       </tbody></table></div>`, { meta: `${suppliers.length} suppliers`, wide: true })}
   </div>
 
-  ${card('Spend by category', `<ul class="p-categories">
+  ${card('Spend by category', `<div class="p-categorylabels"><span>Category</span><span>Relative spend</span><span>Annual spend</span><span>Opportunity</span></div><ul class="p-categories">
     ${categories.map(entry => `<li>
       <span class="p-categories__name">${esc(entry.category)}<small>${entry.count} ${entry.count === 1 ? 'part' : 'parts'}</small></span>
       ${bar(entry.current / biggest, entry.potential / biggest, `${eur(entry.current)} annual spend, ${entry.potential ? eur(entry.potential) : 'no'} opportunity`)}
@@ -460,7 +418,7 @@ export function detailPanel(ui) {
   const thread = conversations.find(entry => entry.product === product.id);
   const value = current === 'No action' ? 0 : saving(product);
 
-  return `<aside class="p-detail" id="p-detail" aria-label="Details for ${esc(product.name)}">
+  return `<div class="p-drawer-shade" data-close-detail="true"></div><aside class="p-detail" id="p-detail" role="dialog" aria-modal="true" tabindex="-1" aria-label="Details for ${esc(product.name)}">
     <header class="p-detail__head">
       <div class="p-detail__bar"><span>Part detail</span>
         <button type="button" class="p-iconbutton" id="p-close-detail" aria-label="Close part detail">×</button></div>
@@ -518,11 +476,12 @@ export function detailPanel(ui) {
         <div><dt>Agreed run rate</dt><dd>−${eur(saving(product))} a year</dd></div>
         <div><dt>Realised so far</dt><dd>${realisedSaving(product, ui.statuses) ? `−${eur(realisedSaving(product, ui.statuses))}` : 'Nothing yet'}</dd></div>
       </dl>` : ''}
+      ${product.signal && isOpen(product, ui.statuses) ? `<button type="button" class="p-button p-button--brand p-detail__action" data-generate="${product.id}">Generate negotiation plan</button>` : ''}
       ${thread ? `<div class="p-detail__thread">
         <span class="p-badge p-badge--${ui.handled.includes(thread.id) ? 'success' : conversationState[thread.state].tone}">${ui.handled.includes(thread.id) ? 'Handled by you' : conversationState[thread.state].label}</span>
         <p>${esc(thread.messages[thread.messages.length - 1].text)}</p>
         <button type="button" class="p-button" data-goto="agents" data-thread="${thread.id}">Open conversation</button></div>`
-      : product.signal ? `<button type="button" class="p-button p-button--brand p-detail__action" id="p-brief" aria-expanded="${ui.brief}">${ui.brief ? 'Hide preparation brief' : 'Prepare supplier message'}</button>` : ''}
+      : product.signal ? `<button type="button" class="p-button p-detail__action" id="p-brief" aria-expanded="${ui.brief}">${ui.brief ? 'Hide preparation brief' : 'Prepare supplier message'}</button>` : ''}
       ${ui.brief && product.signal && !thread ? `<div class="p-brief">
         <strong>Draft for ${esc(product.contact)} · ${esc(product.supplier)}</strong>
         <p>Subject: Price review · ${product.id} ${esc(product.name)}</p>
@@ -534,10 +493,10 @@ export function detailPanel(ui) {
 }
 
 export const viewMeta = {
-  overview: ['Overview', 'Where your purchasing spend stands today and what needs a decision.'],
-  products: ['Parts & suppliers', 'Every part you buy, what its price has done, and where the money is.'],
+  overview: ['Overview', 'Your purchasing performance and next decisions.'],
+  products: ['Parts & suppliers', 'Price movements, supplier relationships and negotiation status.'],
   workflow: ['Workflow', 'Each opportunity from first signal through to an agreed price.'],
-  agents: ['Agents', 'What your agents have done, what they are doing now, and what needs you.'],
+  agents: ['Agents', 'Monitor activity and review the decisions waiting on you.'],
   spend: ['Spend', 'Annual purchasing spend, trend and the opportunity still open.'],
 };
 
