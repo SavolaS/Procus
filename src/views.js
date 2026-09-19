@@ -401,7 +401,7 @@ function spendView(ui) {
   <p class="p-note"><span class="p-swatch" data-kind="spend"></span>Annual spend <span class="p-swatch" data-kind="opportunity"></span>Identified opportunity</p>`, { wide: true })}
 
   <details class="p-notes"><summary>How these figures are calculated</summary>
-    <p>Every amount uses fictional prices and fixed twelve-month volumes. An opportunity assumes the whole example volume moves to the reference price with no additional freight, tooling or qualification cost. These are planning scenarios, not realised savings.</p>
+    <p>Annual projections use twelve-month purchase volumes. Opportunity assumes that volume moves to the reference price, before additional freight, tooling or qualification costs. Projected and realised savings are reported separately.</p>
     <p>Moving a case to <strong>Agreed</strong> applies its reference price to the projection. Reopening it removes the reduction. Cases marked <strong>No action</strong> are excluded from opportunity totals. Agreed savings are part of the identified opportunity, never added on top of it.</p>
     <p>Three figures are deliberately kept apart. <strong>Identified</strong> is what the evidence suggests is available. <strong>Agreed</strong> is what a supplier has confirmed, expressed as an annual run rate. <strong>Realised</strong> counts only months where purchases have actually been invoiced at the agreed price, so an agreement nobody has ordered against yet contributes nothing.</p>
   </details>`;

@@ -160,7 +160,11 @@ root.addEventListener('click', async event => {
   const goto = event.target.closest('[data-goto]');
   if (goto) {
     const { goto: view, product, alert: level, thread } = goto.dataset;
-    if (level) ui.alertFilter = level;
+    if (view === 'products') {
+      ui.query = '';
+      ui.alertFilter = level || 'all';
+      ui.statusFilter = goto.dataset.status || 'all';
+    }
     if (thread) ui.thread = thread;
     if (product) {
       openProduct(product, view);

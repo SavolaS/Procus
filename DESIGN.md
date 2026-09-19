@@ -1,8 +1,16 @@
 # Procus Design Spec — Salesforce Lightning (SLDS) Look & Feel
 
+## Current UI direction — 19 September 2026
+
+This document is a Salesforce Lightning reference, not a locked visual contract. The founder explicitly permits redesign. The current overview uses a compact object header, one neutral metrics strip, a segmented case summary, a priority table, and quieter agent activity. Colour identifies state or action; it does not decorate every metric. Large warning banners and chevrons are not required for portfolio summaries.
+
+Do not restore visible “Sample data” or prototype labels. Data provenance remains documented in README.md and the source. Keep useful calculation assumptions and the distinction between projected, agreed and realised savings in the product.
+
+The historical measurements below remain reference material. Their prescriptive wording does not override the current design direction or AGENTS.md. This revision follows Salesforce’s [clarity, efficiency and consistency principles](https://developer.salesforce.com/docs/platform/salesforce-pages-developers-guide/guide/vf-dev-best-practices-slds-intro.html), without claiming to implement the SLDS component library.
+
 ## How to use this file
 
-This is the single visual contract for Procus. There is no build step, no framework, no npm
+This was the initial visual reference for Procus; the current direction above takes precedence. There is no build step, no framework, no npm
 package — everything here is plain CSS you paste into one stylesheet.
 
 1. Copy the `:root { … }` block in **§2** verbatim into the top of your stylesheet. Do not
